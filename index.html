@@ -1,0 +1,601 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<title>ไอวี่กิ๊ฟช็อป — สั่งซื้อออนไลน์</title>
+<link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --rose:#e8636a;--rose2:#c94a51;--roseL:#fdf0f0;--roseS:#fce8e8;
+  --green:#2d8c4e;--greenL:#edf7f1;
+  --txt:#2a1f1f;--txt2:#7a6060;--txt3:#b09090;
+  --bg:#fffaf9;--bdr:#f0d8d8;--bdr2:#e8c8c8;
+  --r:12px;--rl:16px;--font:'Sarabun',sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+body{font-family:var(--font);background:var(--bg);color:var(--txt);min-height:100vh;padding-bottom:90px;max-width:430px;margin:0 auto}
+input,textarea,button,select{font-family:var(--font)}
+input::placeholder,textarea::placeholder{color:var(--txt3)}
+input:focus,textarea:focus{outline:none;border-color:var(--rose)!important;box-shadow:0 0 0 3px rgba(232,99,106,.1)}
+button:active{transform:scale(.94)}
+::-webkit-scrollbar{width:3px}
+
+/* Hero */
+.hero{background:linear-gradient(145deg,#fce8e8,#fdf0f0,#f8e8f0);padding:28px 20px 18px;text-align:center;border-bottom:1px solid var(--bdr)}
+.logo{width:60px;height:60px;border-radius:50%;background:linear-gradient(135deg,var(--rose),#d45a80);display:flex;align-items:center;justify-content:center;font-size:26px;margin:0 auto 10px;box-shadow:0 4px 16px rgba(232,99,106,.3)}
+.hero h1{font-size:20px;font-weight:700;color:var(--rose2);margin-bottom:3px}
+.hero p{font-size:12px;color:var(--txt2);line-height:1.7}
+.badges{display:flex;justify-content:center;gap:6px;margin-top:10px;flex-wrap:wrap}
+.badge{display:inline-flex;align-items:center;gap:4px;background:#fff;border:1px solid var(--bdr);border-radius:20px;padding:4px 12px;font-size:11px;color:var(--txt2)}
+
+/* Tabs */
+.tabs{display:flex;background:#fff;border-bottom:1px solid var(--bdr);position:sticky;top:0;z-index:50}
+.tab{flex:1;padding:12px 4px 10px;text-align:center;cursor:pointer;border-bottom:2px solid transparent;color:var(--txt3);font-size:11px;font-weight:500;transition:all .2s}
+.tab.active{border-bottom-color:var(--rose);color:var(--rose)}
+.tab .ico{font-size:18px;display:block;margin-bottom:2px}
+
+/* Sections */
+.sec{padding:14px 14px 0}
+.sec-title{font-size:12px;font-weight:600;color:var(--txt2);text-transform:uppercase;letter-spacing:.08em;margin-bottom:10px;display:flex;align-items:center;gap:8px}
+.sec-title::after{content:'';flex:1;height:1px;background:var(--bdr)}
+.card{background:#fff;border:1px solid var(--bdr);border-radius:var(--rl);padding:16px;margin-bottom:8px}
+
+/* Form */
+.fg{margin-bottom:12px}
+.fg:last-child{margin-bottom:0}
+.fl{font-size:12px;font-weight:600;color:var(--txt2);display:block;margin-bottom:5px}
+.req{color:var(--rose)}
+.fi{width:100%;padding:10px 14px;border:1.5px solid var(--bdr);border-radius:var(--r);font-size:14px;color:var(--txt);background:#fff}
+textarea.fi{resize:none;height:78px;line-height:1.6}
+
+/* Products */
+.plist{display:flex;flex-direction:column;gap:10px;margin-bottom:8px}
+.pcard{background:#fff;border:1.5px solid var(--bdr);border-radius:var(--rl);padding:14px;transition:all .2s}
+.pcard.active{border-color:var(--rose);box-shadow:0 2px 12px rgba(232,99,106,.12)}
+.pcard-top-bar{height:3px;background:linear-gradient(90deg,var(--rose),#d45a80);margin:-14px -14px 12px;border-radius:14px 14px 0 0;display:none}
+.pcard.active .pcard-top-bar{display:block}
+.pcard-row{display:flex;align-items:center;gap:12px}
+.picon{width:48px;height:48px;border-radius:12px;background:var(--roseL);display:flex;align-items:center;justify-content:center;font-size:24px;flex-shrink:0}
+.pinfo{flex:1;min-width:0}
+.pname{font-size:14px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.punit{font-size:11px;color:var(--txt3);margin-top:1px}
+.pprice{font-size:15px;font-weight:700;color:var(--rose2);margin-top:2px}
+.qty-ctrl{display:flex;align-items:center;gap:10px;flex-shrink:0}
+.qbtn{width:32px;height:32px;border-radius:50%;font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;line-height:1;transition:all .15s}
+.qbtn.minus{border:1.5px solid var(--bdr2);background:#fff;color:var(--txt)}
+.qbtn.plus{border:none;background:var(--rose);color:#fff;box-shadow:0 2px 8px rgba(232,99,106,.3)}
+.qval{font-size:16px;font-weight:600;min-width:24px;text-align:center}
+.psub{margin-top:10px;padding-top:10px;border-top:1px solid var(--bdr);display:none;justify-content:space-between;font-size:12px;color:var(--txt3)}
+.pcard.active .psub{display:flex}
+.psub-val{font-weight:600;color:var(--rose2)}
+
+/* Payment */
+.pay-opts{display:flex;gap:8px;margin-bottom:12px}
+.pay-opt{flex:1;border:1.5px solid var(--bdr);border-radius:var(--r);padding:12px 10px;text-align:center;cursor:pointer;transition:all .15s}
+.pay-opt.sel{border-color:var(--rose);background:var(--roseS)}
+.pay-ico{font-size:22px;display:block;margin-bottom:4px}
+.pay-lbl{font-size:12px;font-weight:500;color:var(--txt2)}
+.pay-opt.sel .pay-lbl{color:var(--rose2);font-weight:600}
+.transfer-info{background:#fdf6e8;border:1px solid rgba(201,150,58,.25);border-radius:10px;padding:12px;font-size:12px;color:var(--txt2);line-height:2}
+
+/* Summary */
+.sum-card{background:linear-gradient(135deg,#fce8e8,#fff0ee);border:1px solid var(--bdr);border-radius:var(--rl);padding:16px;margin-bottom:16px}
+.sum-row{display:flex;justify-content:space-between;font-size:13px;padding:5px 0;color:var(--txt2)}
+.sum-row span:last-child{font-weight:500;color:var(--txt)}
+.sum-div{border:none;border-top:1px dashed var(--bdr2);margin:8px 0}
+.sum-total{display:flex;justify-content:space-between;align-items:center}
+.sum-total-lbl{font-size:14px;font-weight:600}
+.sum-total-val{font-size:22px;font-weight:700;color:var(--rose2)}
+.free-badge{background:var(--greenL);border:1px solid rgba(45,140,78,.2);border-radius:20px;padding:2px 10px;font-size:11px;color:var(--green);font-weight:500}
+
+/* Submit bar */
+.submit-bar{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:430px;padding:12px 16px;background:rgba(255,250,249,.95);border-top:1px solid var(--bdr);backdrop-filter:blur(8px);z-index:100}
+.submit-btn{width:100%;padding:15px;border:none;border-radius:var(--rl);font-size:15px;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;transition:all .2s}
+.submit-btn.ready{background:linear-gradient(135deg,var(--rose),#d45a80);color:#fff;box-shadow:0 4px 16px rgba(232,99,106,.35)}
+.submit-btn.disabled{background:#e0c8c8;color:#fff;cursor:not-allowed}
+.submit-btn.loading{background:#ccc;cursor:not-allowed}
+
+/* Manage */
+.mlist{display:flex;flex-direction:column;gap:8px}
+.mitem{background:#fff;border:1px solid var(--bdr);border-radius:14px;padding:12px 14px;display:flex;align-items:center;gap:12px}
+.mitem-icon{width:44px;height:44px;border-radius:10px;background:var(--roseL);display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0}
+.mitem-info{flex:1;min-width:0}
+.mitem-name{font-size:13px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.mitem-unit{font-size:11px;color:var(--txt3);margin-top:1px}
+.mitem-price{font-size:13px;font-weight:700;color:var(--rose2);margin-top:2px}
+.mitem-acts{display:flex;gap:6px;flex-shrink:0}
+.act-btn{width:32px;height:32px;border-radius:8px;border:none;cursor:pointer;font-size:13px;display:flex;align-items:center;justify-content:center}
+.act-edit{background:#f0f0f0}
+.act-del{background:#fce8e8}
+
+/* Modal */
+.modal-bg{position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:200;display:flex;align-items:flex-end;justify-content:center;display:none}
+.modal-bg.open{display:flex}
+.modal{background:#fff;border-radius:20px 20px 0 0;width:100%;max-width:430px;padding:20px 20px 32px;max-height:92vh;overflow-y:auto;border-top:1px solid var(--bdr)}
+.modal-handle{width:36px;height:4px;background:var(--bdr2);border-radius:2px;margin:0 auto 16px}
+.modal-title{font-size:16px;font-weight:700;margin-bottom:14px}
+.icon-grid{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:4px}
+.icon-btn{width:38px;height:38px;border-radius:10px;border:1.5px solid var(--bdr);background:#fff;font-size:20px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .15s}
+.icon-btn.sel{border-color:var(--rose);background:var(--roseS)}
+.modal-actions{display:grid;grid-template-columns:1fr 2fr;gap:10px;margin-top:16px}
+.btn-cancel{padding:12px;border-radius:12px;border:1px solid var(--bdr);background:#fff;color:var(--txt2);font-size:13px;font-weight:500;cursor:pointer}
+.btn-save{padding:12px;border-radius:12px;border:none;background:var(--rose);color:#fff;font-size:13px;font-weight:600;cursor:pointer}
+
+/* Success */
+.success-page{display:none;flex-direction:column;align-items:center;justify-content:center;min-height:80vh;padding:32px 20px;text-align:center}
+.success-page.show{display:flex}
+.success-ico{width:80px;height:80px;border-radius:50%;background:linear-gradient(135deg,var(--green),#48b870);display:flex;align-items:center;justify-content:center;font-size:36px;margin:0 auto 20px;box-shadow:0 8px 24px rgba(45,140,78,.25);animation:pop .4s cubic-bezier(.34,1.56,.64,1)}
+@keyframes pop{0%{transform:scale(0);opacity:0}100%{transform:scale(1);opacity:1}}
+.success-title{font-size:22px;font-weight:700;color:var(--green);margin-bottom:8px}
+.success-sub{font-size:13px;color:var(--txt2);line-height:1.8;margin-bottom:20px}
+.order-summary{background:#fff;border:1px solid var(--bdr);border-radius:var(--rl);padding:16px;width:100%;max-width:360px;text-align:left;margin-bottom:20px}
+.os-row{display:flex;justify-content:space-between;font-size:12px;padding:5px 0;border-bottom:1px solid var(--bdr);color:var(--txt2)}
+.os-row b{color:var(--txt)}
+.os-row.total b{color:var(--rose2)}
+.btn-again{padding:12px 32px;border:1.5px solid var(--rose);border-radius:var(--rl);background:#fff;color:var(--rose2);font-size:14px;font-weight:600;cursor:pointer}
+
+/* Toast */
+.toast{position:fixed;top:16px;left:50%;transform:translateX(-50%) translateY(-60px);background:var(--rose2);color:#fff;padding:10px 20px;border-radius:20px;font-size:13px;font-weight:500;z-index:999;transition:transform .3s;white-space:nowrap;pointer-events:none}
+.toast.show{transform:translateX(-50%) translateY(0)}
+
+/* Page visibility */
+.page{display:none}
+.page.active{display:block}
+</style>
+</head>
+<body>
+
+<!-- Hero -->
+<div class="hero" id="main-hero">
+  <div class="logo">🌿</div>
+  <h1>ไอวี่กิ๊ฟช็อป</h1>
+  <p>สินค้าอุปโภคคุณภาพดี ราคาถูก<br>สั่งง่าย ส่งเร็ว ถึงบ้านคุณ</p>
+  <div class="badges">
+    <span class="badge">🚚 ส่งฟรีทุกออเดอร์</span>
+    <span class="badge">💳 โอน/เก็บปลายทาง</span>
+  </div>
+</div>
+
+<!-- Tabs -->
+<div class="tabs" id="main-tabs">
+  <div class="tab active" id="tab-order" onclick="switchTab('order')">
+    <span class="ico">🛒</span>สั่งซื้อ
+  </div>
+  <div class="tab" id="tab-manage" onclick="switchTab('manage')">
+    <span class="ico">⚙️</span>จัดการสินค้า
+  </div>
+</div>
+
+<!-- ORDER PAGE -->
+<div class="page active" id="page-order">
+
+  <div class="sec" style="margin-top:14px">
+    <div class="sec-title">📋 ข้อมูลผู้สั่ง</div>
+    <div class="card">
+      <div class="fg">
+        <label class="fl">ชื่อ-นามสกุล <span class="req">*</span></label>
+        <input class="fi" id="f-name" type="text" placeholder="กรอกชื่อของคุณ">
+      </div>
+      <div class="fg">
+        <label class="fl">เบอร์โทรศัพท์ <span class="req">*</span></label>
+        <input class="fi" id="f-phone" type="tel" placeholder="0xx-xxx-xxxx">
+      </div>
+      <div class="fg" style="margin-bottom:0">
+        <label class="fl">ที่อยู่จัดส่ง <span class="req">*</span></label>
+        <textarea class="fi" id="f-addr" placeholder="บ้านเลขที่ ซอย ถนน ตำบล อำเภอ จังหวัด"></textarea>
+      </div>
+    </div>
+  </div>
+
+  <div class="sec">
+    <div class="sec-title">
+      🛒 เลือกสินค้า
+      <span id="cart-count-badge" style="display:none;font-size:11px;background:var(--rose);color:#fff;border-radius:20px;padding:2px 10px;font-weight:600;margin-left:4px"></span>
+    </div>
+    <div class="plist" id="product-list"></div>
+  </div>
+
+  <div class="sec">
+    <div class="sec-title">💰 ช่องทางชำระเงิน</div>
+    <div class="card">
+      <div class="pay-opts">
+        <div class="pay-opt sel" id="pay-transfer" onclick="selectPay('transfer')">
+          <span class="pay-ico">🏦</span>
+          <span class="pay-lbl">โอนเงินก่อน</span>
+        </div>
+        <div class="pay-opt" id="pay-cod" onclick="selectPay('cod')">
+          <span class="pay-ico">🏠</span>
+          <span class="pay-lbl">เก็บปลายทาง</span>
+        </div>
+      </div>
+      <div class="transfer-info" id="transfer-info">
+        📱 ธนาคาร: <b>กรุงไทย</b><br>
+        💳 เลขบัญชี: <b>xxx-x-xxxxx-x</b><br>
+        👤 ชื่อบัญชี: <b>ไอวี่กิ๊ฟช็อป</b><br>
+        📸 กรุณาส่งสลิปหลังโอนทาง Line
+      </div>
+    </div>
+  </div>
+
+  <div class="sec">
+    <div class="sec-title">💬 หมายเหตุ</div>
+    <div class="card">
+      <textarea class="fi" id="f-note" placeholder="ข้อความพิเศษถึงร้านค้า..."></textarea>
+    </div>
+  </div>
+
+  <div class="sec">
+    <div class="sec-title">🧾 สรุปออเดอร์</div>
+    <div class="sum-card">
+      <div id="sum-items"><div style="text-align:center;color:var(--txt3);font-size:12px;padding:8px 0">ยังไม่ได้เลือกสินค้า</div></div>
+      <hr class="sum-div">
+      <div class="sum-row"><span>ค่าสินค้า</span><span id="sum-sub">฿0.00</span></div>
+      <div class="sum-row"><span>ค่าจัดส่ง</span><span class="free-badge">✓ ฟรี</span></div>
+      <hr class="sum-div">
+      <div class="sum-total">
+        <span class="sum-total-lbl">ยอดรวมทั้งสิ้น</span>
+        <span class="sum-total-val" id="sum-total">฿0.00</span>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /page-order -->
+
+<!-- MANAGE PAGE -->
+<div class="page" id="page-manage">
+  <div class="sec" style="margin-top:14px">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+      <div style="display:flex;align-items:center;gap:8px">
+        <span style="font-size:12px;font-weight:600;color:var(--txt2);text-transform:uppercase;letter-spacing:.08em">📦 สินค้าทั้งหมด</span>
+        <span id="product-count" style="font-size:11px;background:var(--roseS);color:var(--rose2);border-radius:20px;padding:2px 10px;font-weight:600"></span>
+      </div>
+      <button onclick="openAddModal()" style="padding:8px 14px;border-radius:10px;border:none;background:var(--rose);color:#fff;font-size:12px;font-weight:600;cursor:pointer">+ เพิ่มสินค้า</button>
+    </div>
+    <div class="mlist" id="manage-list"></div>
+  </div>
+</div>
+
+<!-- SUCCESS PAGE -->
+<div class="success-page" id="success-page">
+  <div class="success-ico">✓</div>
+  <div class="success-title">สั่งซื้อสำเร็จแล้ว!</div>
+  <div class="success-sub">ขอบคุณที่ใช้บริการร้านไอวี่กิ๊ฟช็อป<br>เราจะติดต่อยืนยันออเดอร์ทาง Line<br>ภายใน 30 นาทีครับ/ค่ะ</div>
+  <div class="order-summary" id="order-summary"></div>
+  <button class="btn-again" onclick="resetOrder()">+ สั่งซื้อเพิ่มเติม</button>
+</div>
+
+<!-- Submit Bar -->
+<div class="submit-bar" id="submit-bar">
+  <button class="submit-btn disabled" id="submit-btn" onclick="submitOrder()">
+    <span id="btn-text">📦 สั่งซื้อเลย</span>
+    <span id="btn-total" style="font-size:13px;opacity:.85"></span>
+  </button>
+</div>
+
+<!-- Add/Edit Modal -->
+<div class="modal-bg" id="add-modal">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <div class="modal-title" id="modal-title">เพิ่มสินค้าใหม่</div>
+    <div class="fg">
+      <label class="fl">ไอคอนสินค้า</label>
+      <div class="icon-grid" id="icon-grid"></div>
+    </div>
+    <div class="fg">
+      <label class="fl">ชื่อสินค้า *</label>
+      <input class="fi" id="m-name" placeholder="เช่น สบู่ก้อน ลักส์">
+    </div>
+    <div class="fg">
+      <label class="fl">หน่วย</label>
+      <input class="fi" id="m-unit" placeholder="เช่น ขวด 500ml / ถุง 1 กก.">
+    </div>
+    <div class="fg" style="margin-bottom:0">
+      <label class="fl">ราคา (฿) *</label>
+      <input class="fi" id="m-price" type="number" placeholder="0.00">
+    </div>
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closeModal()">ยกเลิก</button>
+      <button class="btn-save" onclick="saveProduct()">💾 บันทึก</button>
+    </div>
+  </div>
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+
+<script>
+// ── Config ────────────────────────────────────────────────────────────
+const SHEET_URL = "https://script.google.com/macros/s/AKfycbxxbOZWB93IV-Zn3tSCzkIe76uZRSVtqRyt8NBO7DbG1tJBtf2Hz9IeS6s27LuNxZu9/exec";
+
+const ICONS = ["🍶","👕","🦷","🧼","🧻","🧴","🪥","🧹","🧺","🫧","🪣","🧽","💊","🩹","🔋","🕯️","🧈","🫙","🥫","🍜","💧","🛒","📦","🎁","🌿"];
+
+// ── State ─────────────────────────────────────────────────────────────
+let products = [
+  {id:1,name:"น้ำยาล้างจาน สิงห์คู่",unit:"ขวด 500ml",price:35,icon:"🍶"},
+  {id:2,name:"ผงซักฟอก แฟ้บ",unit:"ถุง 450g",price:42,icon:"👕"},
+  {id:3,name:"ยาสีฟัน คอลเกต",unit:"หลอด 150g",price:55,icon:"🦷"},
+  {id:4,name:"สบู่ก้อน ลักส์",unit:"ก้อน 80g",price:28,icon:"🧼"},
+  {id:5,name:"กระดาษทิชชู่ สก๊อตต์",unit:"ห่อ 6 ม้วน",price:75,icon:"🧻"},
+];
+let cart = {};
+let payMethod = "transfer";
+let editingId = null;
+let selectedIcon = "🛒";
+let isLoading = false;
+
+// ── Toast ─────────────────────────────────────────────────────────────
+let toastTimer;
+function showToast(msg) {
+  const el = document.getElementById('toast');
+  el.textContent = msg; el.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(()=>el.classList.remove('show'), 2500);
+}
+
+// ── Tabs ──────────────────────────────────────────────────────────────
+function switchTab(tab) {
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.getElementById('tab-'+tab).classList.add('active');
+  document.getElementById('page-'+tab).classList.add('active');
+  document.getElementById('submit-bar').style.display = tab==='order'?'block':'none';
+  if(tab==='manage') renderManage();
+}
+
+// ── Render Products ───────────────────────────────────────────────────
+function renderProducts() {
+  const list = document.getElementById('product-list');
+  list.innerHTML = products.map(p => `
+    <div class="pcard${cart[p.id]?' active':''}" id="pc-${p.id}">
+      <div class="pcard-top-bar"></div>
+      <div class="pcard-row">
+        <div class="picon">${p.icon}</div>
+        <div class="pinfo">
+          <div class="pname">${p.name}</div>
+          <div class="punit">${p.unit}</div>
+          <div class="pprice">฿${p.price.toFixed(2)}</div>
+        </div>
+        <div class="qty-ctrl">
+          <button class="qbtn minus" onclick="changeQty(${p.id},-1)">−</button>
+          <span class="qval" id="qv-${p.id}">${cart[p.id]||0}</span>
+          <button class="qbtn plus" onclick="changeQty(${p.id},1)">+</button>
+        </div>
+      </div>
+      <div class="psub" id="psub-${p.id}">
+        <span>รวม ${p.name}</span>
+        <span class="psub-val">฿${((cart[p.id]||0)*p.price).toFixed(2)}</span>
+      </div>
+    </div>
+  `).join('');
+}
+
+function changeQty(id, d) {
+  cart[id] = Math.max(0, (cart[id]||0) + d);
+  if(!cart[id]) delete cart[id];
+  updateCart();
+}
+
+function updateCart() {
+  const cartItems = products.filter(p=>cart[p.id]);
+  const total = cartItems.reduce((s,p)=>s+p.price*cart[p.id],0);
+  const count = cartItems.reduce((s,p)=>s+cart[p.id],0);
+
+  // Update each card
+  products.forEach(p => {
+    const card = document.getElementById('pc-'+p.id);
+    const qv = document.getElementById('qv-'+p.id);
+    const psub = document.getElementById('psub-'+p.id);
+    if(!card) return;
+    const qty = cart[p.id]||0;
+    qv.textContent = qty;
+    if(qty>0){
+      card.classList.add('active');
+      psub.querySelector('.psub-val').textContent = '฿'+(qty*p.price).toFixed(2);
+    } else {
+      card.classList.remove('active');
+    }
+  });
+
+  // Badge
+  const badge = document.getElementById('cart-count-badge');
+  if(count>0){ badge.style.display='inline'; badge.textContent=count+' ชิ้น'; }
+  else badge.style.display='none';
+
+  // Summary
+  if(cartItems.length===0){
+    document.getElementById('sum-items').innerHTML='<div style="text-align:center;color:var(--txt3);font-size:12px;padding:8px 0">ยังไม่ได้เลือกสินค้า</div>';
+  } else {
+    document.getElementById('sum-items').innerHTML = cartItems.map(p=>
+      `<div class="sum-row"><span>${p.name} ×${cart[p.id]}</span><span>฿${(p.price*cart[p.id]).toFixed(2)}</span></div>`
+    ).join('');
+  }
+  document.getElementById('sum-sub').textContent = '฿'+total.toFixed(2);
+  document.getElementById('sum-total').textContent = '฿'+total.toFixed(2);
+
+  // Submit btn
+  const name = document.getElementById('f-name').value.trim();
+  const phone = document.getElementById('f-phone').value.trim();
+  const addr = document.getElementById('f-addr').value.trim();
+  const canSubmit = name && phone && addr && cartItems.length>0;
+  const btn = document.getElementById('submit-btn');
+  btn.className = 'submit-btn '+(isLoading?'loading':canSubmit?'ready':'disabled');
+  document.getElementById('btn-total').textContent = total>0?'— ฿'+total.toFixed(2):'';
+  document.getElementById('btn-text').textContent = isLoading?'⏳ กำลังส่งออเดอร์...':'📦 สั่งซื้อเลย';
+}
+
+// ── Payment ───────────────────────────────────────────────────────────
+function selectPay(method) {
+  payMethod = method;
+  document.getElementById('pay-transfer').classList.toggle('sel', method==='transfer');
+  document.getElementById('pay-cod').classList.toggle('sel', method==='cod');
+  document.getElementById('transfer-info').style.display = method==='transfer'?'block':'none';
+}
+
+// ── Submit ────────────────────────────────────────────────────────────
+async function submitOrder() {
+  if(isLoading) return;
+  const name = document.getElementById('f-name').value.trim();
+  const phone = document.getElementById('f-phone').value.trim();
+  const addr = document.getElementById('f-addr').value.trim();
+  const note = document.getElementById('f-note').value.trim();
+  const cartItems = products.filter(p=>cart[p.id]);
+  const total = cartItems.reduce((s,p)=>s+p.price*cart[p.id],0);
+
+  if(!name){showToast('⚠️ กรุณากรอกชื่อ-นามสกุล');return;}
+  if(!phone){showToast('⚠️ กรุณากรอกเบอร์โทรศัพท์');return;}
+  if(!addr){showToast('⚠️ กรุณากรอกที่อยู่จัดส่ง');return;}
+  if(!cartItems.length){showToast('⚠️ กรุณาเลือกสินค้าอย่างน้อย 1 รายการ');return;}
+
+  const orderNo = 'IVY'+Date.now().toString().slice(-6);
+  const now = new Date().toLocaleString('th-TH');
+  const itemsText = cartItems.map(p=>`${p.name} ×${cart[p.id]} (฿${(p.price*cart[p.id]).toFixed(2)})`).join(', ');
+  const payText = payMethod==='transfer'?'โอนเงินก่อน':'เก็บเงินปลายทาง';
+
+  isLoading = true; updateCart();
+
+  try {
+    await fetch(SHEET_URL, {
+      method:'POST',
+      mode:'no-cors',
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({
+        orderNo, datetime:now, name, phone,
+        address:addr, items:itemsText,
+        total:'฿'+total.toFixed(2),
+        payment:payText, note:note||'-'
+      })
+    });
+  } catch(e) { console.log(e); }
+
+  isLoading = false;
+
+  // Show success
+  document.getElementById('main-hero').style.display='none';
+  document.getElementById('main-tabs').style.display='none';
+  document.getElementById('page-order').style.display='none';
+  document.getElementById('submit-bar').style.display='none';
+  const sp = document.getElementById('success-page');
+  sp.classList.add('show');
+
+  document.getElementById('order-summary').innerHTML = [
+    `<div class="os-row"><span>เลขออเดอร์</span><b>${orderNo}</b></div>`,
+    ...cartItems.map(p=>`<div class="os-row"><span>${p.name} ×${cart[p.id]}</span><b>฿${(p.price*cart[p.id]).toFixed(2)}</b></div>`),
+    `<div class="os-row total"><span>ยอดรวม</span><b>฿${total.toFixed(2)}</b></div>`,
+    `<div class="os-row"><span>การชำระ</span><b>${payText}</b></div>`,
+  ].join('');
+}
+
+function resetOrder() {
+  cart = {};
+  document.getElementById('f-name').value='';
+  document.getElementById('f-phone').value='';
+  document.getElementById('f-addr').value='';
+  document.getElementById('f-note').value='';
+  document.getElementById('main-hero').style.display='';
+  document.getElementById('main-tabs').style.display='';
+  document.getElementById('page-order').style.display='block';
+  document.getElementById('page-order').classList.add('active');
+  document.getElementById('submit-bar').style.display='';
+  document.getElementById('success-page').classList.remove('show');
+  renderProducts(); updateCart();
+  window.scrollTo(0,0);
+}
+
+// ── Manage ────────────────────────────────────────────────────────────
+function renderManage() {
+  document.getElementById('product-count').textContent = products.length+' รายการ';
+  document.getElementById('manage-list').innerHTML = products.map(p=>`
+    <div class="mitem">
+      <div class="mitem-icon">${p.icon}</div>
+      <div class="mitem-info">
+        <div class="mitem-name">${p.name}</div>
+        <div class="mitem-unit">${p.unit}</div>
+        <div class="mitem-price">฿${p.price.toFixed(2)}</div>
+      </div>
+      <div class="mitem-acts">
+        <button class="act-btn act-edit" onclick="openEditModal(${p.id})">✏️</button>
+        <button class="act-btn act-del" onclick="deleteProduct(${p.id})">🗑</button>
+      </div>
+    </div>
+  `).join('');
+}
+
+function deleteProduct(id) {
+  if(!confirm('ลบสินค้านี้ออก?')) return;
+  products = products.filter(p=>p.id!==id);
+  delete cart[id];
+  renderManage(); renderProducts(); updateCart();
+  showToast('ลบสินค้าแล้ว');
+}
+
+// ── Modal ─────────────────────────────────────────────────────────────
+function buildIconGrid() {
+  document.getElementById('icon-grid').innerHTML = ICONS.map(ico=>
+    `<button class="icon-btn${selectedIcon===ico?' sel':''}" onclick="selectIcon('${ico}')">${ico}</button>`
+  ).join('');
+}
+
+function selectIcon(ico) {
+  selectedIcon = ico;
+  document.querySelectorAll('.icon-btn').forEach(b=>{
+    b.classList.toggle('sel', b.textContent===ico);
+  });
+}
+
+function openAddModal() {
+  editingId=null; selectedIcon='🛒';
+  document.getElementById('modal-title').textContent='เพิ่มสินค้าใหม่';
+  document.getElementById('m-name').value='';
+  document.getElementById('m-unit').value='';
+  document.getElementById('m-price').value='';
+  buildIconGrid();
+  document.getElementById('add-modal').classList.add('open');
+}
+
+function openEditModal(id) {
+  const p = products.find(x=>x.id===id);
+  editingId = id; selectedIcon = p.icon;
+  document.getElementById('modal-title').textContent='แก้ไขสินค้า';
+  document.getElementById('m-name').value=p.name;
+  document.getElementById('m-unit').value=p.unit;
+  document.getElementById('m-price').value=p.price;
+  buildIconGrid();
+  document.getElementById('add-modal').classList.add('open');
+}
+
+function closeModal() {
+  document.getElementById('add-modal').classList.remove('open');
+}
+
+function saveProduct() {
+  const name = document.getElementById('m-name').value.trim();
+  const unit = document.getElementById('m-unit').value.trim();
+  const price = parseFloat(document.getElementById('m-price').value);
+  if(!name){showToast('⚠️ กรุณากรอกชื่อสินค้า');return;}
+  if(!price||price<=0){showToast('⚠️ กรุณากรอกราคา');return;}
+
+  if(editingId) {
+    products = products.map(p=>p.id===editingId?{...p,name,unit,price,icon:selectedIcon}:p);
+    showToast('✓ อัปเดตสินค้าแล้ว');
+  } else {
+    products.push({id:Date.now(),name,unit,price,icon:selectedIcon});
+    showToast('✓ เพิ่มสินค้าแล้ว');
+  }
+  closeModal(); renderManage(); renderProducts(); updateCart();
+}
+
+// ── Listen form changes for submit btn ────────────────────────────────
+['f-name','f-phone','f-addr'].forEach(id=>{
+  document.getElementById(id).addEventListener('input', updateCart);
+});
+
+// ── Init ──────────────────────────────────────────────────────────────
+renderProducts();
+updateCart();
+document.getElementById('transfer-info').style.display='block';
+</script>
+</body>
+</html>

@@ -446,7 +446,7 @@ function startScanner(){
   document.getElementById('qr-placeholder').style.display='none';
   document.getElementById('scanner-container').style.display='block';
   document.getElementById('cam-btn').innerHTML='<i class="ti ti-player-stop"></i> หยุดกล้อง';
-  codeBuffer={};lastCode='';
+  codeBuffer={};lastCode=''; // reset เมื่อเริ่มสแกนใหม่
 
   Quagga.init({
     inputStream:{
@@ -512,7 +512,7 @@ function stopScanner(){
   document.getElementById('qr-placeholder').style.display='flex';
   document.getElementById('scanner-container').style.display='none';
   document.getElementById('cam-btn').innerHTML='<i class="ti ti-barcode"></i> เปิดกล้องสแกน Barcode';
-  setStatus('');setLastCode('');lastCode='';
+  setStatus('');setLastCode('');
 }
 
 function onCodeFound(code){

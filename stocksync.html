@@ -6,28 +6,27 @@
 <meta name="theme-color" content="#1D9E75"/>
 <meta name="apple-mobile-web-app-capable" content="yes"/>
 <meta name="apple-mobile-web-app-title" content="StockSync"/>
-<title>StockSync — ระบบเช็คสต็อกสินค้า</title>
+<title>StockSync</title>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css"/>
-<script src="https://cdn.jsdelivr.net/npm/quagga@0.12.1/dist/quagga.min.js"></script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
 :root{
-  --primary:#1D9E75;--primary-light:#E1F5EE;--primary-dark:#0F6E56;
+  --primary:#1D9E75;--primary-light:#E1F5EE;
   --danger:#E24B4A;--warning:#BA7517;
   --text:#1a1a1a;--text-muted:#6b7280;
   --bg:#fff;--bg2:#f5f5f0;--border:rgba(0,0,0,0.12);
   --radius:8px;--radius-lg:12px;
 }
 @media(prefers-color-scheme:dark){
-  :root{--text:#f0f0f0;--text-muted:#9ca3af;--bg:#1c1c1e;--bg2:#2c2c2e;--border:rgba(255,255,255,0.12);}
+  :root{--text:#f0f0f0;--text-muted:#9ca3af;--bg:#1c1c1e;--bg2:#2c2c2e;--border:rgba(255,255,255,0.15);}
 }
 html,body{height:100%;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:14px;color:var(--text);background:var(--bg2);}
-.app{max-width:480px;margin:0 auto;min-height:100vh;background:var(--bg2);}
+.app{max-width:480px;margin:0 auto;min-height:100vh;}
 .topbar{background:var(--primary);color:#fff;padding:14px 16px;display:flex;align-items:center;gap:10px;position:sticky;top:0;z-index:10;}
 .topbar .title{font-size:17px;font-weight:600;flex:1;}
 .topbar .badge{background:rgba(255,255,255,0.25);font-size:11px;padding:3px 10px;border-radius:20px;}
 .tabs{display:flex;background:var(--bg);border-bottom:0.5px solid var(--border);position:sticky;top:52px;z-index:9;}
-.tab{flex:1;padding:10px 4px;text-align:center;font-size:11px;cursor:pointer;color:var(--text-muted);border:none;background:none;display:flex;flex-direction:column;align-items:center;gap:3px;}
+.tab{flex:1;padding:10px 4px;font-size:11px;cursor:pointer;color:var(--text-muted);border:none;background:none;display:flex;flex-direction:column;align-items:center;gap:3px;}
 .tab i{font-size:20px;}
 .tab.active{color:var(--primary);border-bottom:2px solid var(--primary);}
 .page{padding:12px;display:none;}
@@ -37,7 +36,7 @@ html,body{height:100%;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sa
 .search-bar input:focus{border-color:var(--primary);}
 .btn-icon{width:42px;height:42px;border:0.5px solid var(--border);border-radius:var(--radius);background:var(--bg);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:20px;color:var(--text-muted);flex-shrink:0;}
 .btn-icon.primary{background:var(--primary-light);color:var(--primary);border-color:var(--primary);}
-.stats-row{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-bottom:12px;}
+.stats-row{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px;}
 .stat-card{background:var(--bg);border-radius:var(--radius);padding:12px 14px;border:0.5px solid var(--border);}
 .stat-card .label{font-size:11px;color:var(--text-muted);margin-bottom:4px;}
 .stat-card .val{font-size:24px;font-weight:600;}
@@ -45,7 +44,7 @@ html,body{height:100%;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sa
 .stat-card.ok .val{color:var(--primary);}
 .product-list{display:flex;flex-direction:column;gap:8px;padding-bottom:80px;}
 .product-card{background:var(--bg);border:0.5px solid var(--border);border-radius:var(--radius-lg);padding:12px 14px;display:flex;align-items:center;gap:10px;cursor:pointer;}
-.product-card:active{background:var(--primary-light);border-color:var(--primary);}
+.product-card:active{background:var(--primary-light);}
 .sku-badge{background:var(--bg2);color:var(--text-muted);font-size:10px;padding:2px 6px;border-radius:4px;font-family:monospace;}
 .product-card .info{flex:1;min-width:0;}
 .product-card .name{font-size:14px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
@@ -73,24 +72,21 @@ html,body{height:100%;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sa
 .btn-primary.danger{background:var(--danger);}
 .btn-primary.outline{background:transparent;color:var(--primary);border:1px solid var(--primary);}
 
-/* Scanner */
-.qr-wrap{background:var(--bg);border:0.5px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;margin-bottom:14px;}
-#scanner-container{position:relative;width:100%;background:#000;display:none;}
-#scanner-container video{width:100%!important;height:auto!important;display:block!important;max-height:260px;object-fit:cover;}
-#scanner-container canvas.drawingBuffer{position:absolute!important;top:0!important;left:0!important;width:100%!important;height:100%!important;}
-.scan-aim{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;pointer-events:none;}
-/* กรอบบาร์โค้ด แนวนอน */
-.aim-box{width:88%;height:80px;position:relative;border:2px solid #1D9E75;border-radius:4px;}
-.aim-box::after{content:'';position:absolute;inset:6px;border-top:1px dashed rgba(29,158,117,0.4);border-bottom:1px dashed rgba(29,158,117,0.4);}
-.aim-line{position:absolute;left:4%;right:4%;top:50%;height:2px;background:linear-gradient(90deg,transparent,#1D9E75,transparent);transform:translateY(-50%);animation:sweep 1.6s ease-in-out infinite;}
-@keyframes sweep{0%,100%{opacity:0.3;transform:translateY(-50%) scaleX(0.7);}50%{opacity:1;transform:translateY(-50%) scaleX(1);}}
-.qr-placeholder{padding:28px 16px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;background:var(--bg2);}
-.qr-placeholder span{font-size:12px;color:var(--text-muted);}
-.scan-info{padding:10px 14px;display:flex;flex-direction:column;gap:6px;}
-.scan-status{font-size:13px;font-weight:500;color:var(--primary);min-height:18px;}
-.last-code{font-size:11px;color:var(--text-muted);font-family:monospace;min-height:16px;}
-.scan-badges{display:flex;gap:5px;flex-wrap:wrap;}
-.scan-badge{font-size:10px;background:var(--bg2);color:var(--text-muted);padding:2px 8px;border-radius:20px;}
+/* ===== SCANNER ===== */
+.scan-wrap{background:var(--bg);border:0.5px solid var(--border);border-radius:var(--radius-lg);margin-bottom:14px;overflow:hidden;}
+.scan-placeholder{padding:32px 16px;display:flex;flex-direction:column;align-items:center;gap:8px;background:var(--bg2);}
+.scan-placeholder span{font-size:12px;color:var(--text-muted);}
+#viewport{position:relative;width:100%;background:#000;display:none;}
+/* Quagga จะสร้าง video และ canvas เองใน #viewport */
+#viewport video{width:100%!important;height:auto!important;display:block!important;}
+#viewport canvas{display:none!important;} /* ซ่อน canvas ของ Quagga */
+.scan-guide{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;pointer-events:none;}
+.scan-box{width:85%;height:90px;border:2px solid var(--primary);border-radius:6px;position:relative;box-shadow:0 0 0 9999px rgba(0,0,0,0.4);}
+.scan-line{position:absolute;left:0;right:0;top:50%;height:2px;background:var(--primary);opacity:0.9;transform:translateY(-50%);animation:pulse 1.2s ease-in-out infinite;}
+@keyframes pulse{0%,100%{opacity:0.4;}50%{opacity:1;}}
+.scan-info{padding:10px 14px;}
+.scan-status{font-size:13px;font-weight:500;color:var(--primary);min-height:20px;}
+.scan-reading{font-size:11px;color:var(--text-muted);font-family:monospace;min-height:16px;margin-top:2px;}
 
 /* History */
 .history-item{display:flex;align-items:center;gap:10px;padding:12px 0;border-bottom:0.5px solid var(--border);}
@@ -105,28 +101,32 @@ html,body{height:100%;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sa
 
 /* POS */
 .pos-card{background:var(--bg);border:0.5px solid var(--border);border-radius:var(--radius-lg);padding:14px;margin-bottom:10px;}
-.pos-card .pos-name{font-size:14px;font-weight:500;margin-bottom:3px;}
-.pos-card .pos-meta{font-size:12px;color:var(--text-muted);}
+.pos-name{font-size:14px;font-weight:500;margin-bottom:3px;}
+.pos-meta{font-size:12px;color:var(--text-muted);}
 .pos-status{font-size:11px;padding:3px 10px;border-radius:20px;float:right;font-weight:500;}
-.pos-status.connected{background:#E1F5EE;color:#085041;}
-.pos-status.offline{background:var(--bg2);color:var(--text-muted);}
-.btn-outline-row{padding:13px 14px;border:0.5px solid var(--border);border-radius:var(--radius);background:var(--bg);cursor:pointer;font-size:13px;color:var(--text);display:flex;align-items:center;gap:12px;text-align:left;width:100%;margin-bottom:8px;}
-.btn-outline-row:active{background:var(--primary-light);}
-.btn-outline-row i{font-size:22px;color:var(--primary);flex-shrink:0;}
-.btn-outline-row .row-title{font-weight:500;font-size:14px;}
-.btn-outline-row .row-sub{font-size:11px;color:var(--text-muted);margin-top:2px;}
+.pos-status.on{background:#E1F5EE;color:#085041;}
+.pos-status.off{background:var(--bg2);color:var(--text-muted);}
+.btn-row{padding:13px 14px;border:0.5px solid var(--border);border-radius:var(--radius);background:var(--bg);cursor:pointer;display:flex;align-items:center;gap:12px;text-align:left;width:100%;margin-bottom:8px;color:var(--text);}
+.btn-row:active{background:var(--primary-light);}
+.btn-row i{font-size:22px;color:var(--primary);flex-shrink:0;}
+.btn-row .rt{font-weight:500;font-size:14px;}
+.btn-row .rs{font-size:11px;color:var(--text-muted);margin-top:2px;}
 
 /* Modal */
-.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:100;display:none;align-items:flex-end;justify-content:center;}
-.modal-overlay.open{display:flex;}
-.modal{background:var(--bg);border-radius:20px 20px 0 0;padding:20px 16px 32px;width:100%;max-width:480px;max-height:90vh;overflow-y:auto;}
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:100;display:none;align-items:flex-end;justify-content:center;}
+.overlay.open{display:flex;}
+.modal{background:var(--bg);border-radius:20px 20px 0 0;padding:20px 16px 36px;width:100%;max-width:480px;max-height:92vh;overflow-y:auto;}
 .modal-handle{width:36px;height:4px;background:var(--border);border-radius:2px;margin:0 auto 18px;}
 .modal-title{font-size:17px;font-weight:600;margin-bottom:18px;}
 .two-col{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
 .stock-big{text-align:center;padding:20px;background:var(--bg2);border-radius:var(--radius);margin-bottom:16px;}
-.stock-big .s-label{font-size:12px;color:var(--text-muted);margin-bottom:4px;}
-.stock-big .s-val{font-size:42px;font-weight:700;color:var(--primary);line-height:1;}
-.stock-big .s-unit{font-size:14px;color:var(--text-muted);margin-top:4px;}
+.stock-big .sl{font-size:12px;color:var(--text-muted);margin-bottom:4px;}
+.stock-big .sv{font-size:42px;font-weight:700;color:var(--primary);line-height:1;}
+.stock-big .su{font-size:14px;color:var(--text-muted);margin-top:4px;}
+
+/* highlight ช่อง barcode ที่ถูก fill */
+input.filled{border-color:var(--primary);background:var(--primary-light)!important;}
+
 .toast{position:fixed;bottom:90px;left:50%;transform:translateX(-50%) translateY(20px);background:rgba(15,15,15,0.9);color:#fff;padding:10px 20px;border-radius:24px;font-size:13px;opacity:0;transition:all 0.25s;pointer-events:none;z-index:200;white-space:nowrap;}
 .toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
 @media(max-width:380px){.fab{right:16px;}}
@@ -149,70 +149,52 @@ html,body{height:100%;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sa
   <!-- STOCK -->
   <div class="page active" id="page-stock">
     <div class="stats-row">
-      <div class="stat-card ok"><div class="label">สินค้าทั้งหมด</div><div class="val" id="total-count">0</div></div>
-      <div class="stat-card warn"><div class="label">ใกล้หมด / หมด</div><div class="val" id="low-count">0</div></div>
+      <div class="stat-card ok"><div class="label">สินค้าทั้งหมด</div><div class="val" id="tc">0</div></div>
+      <div class="stat-card warn"><div class="label">ใกล้หมด / หมด</div><div class="val" id="lc">0</div></div>
     </div>
     <div class="search-bar">
-      <input type="text" placeholder="ค้นหาชื่อหรือรหัสสินค้า..." oninput="filterProducts(this.value)"/>
+      <input type="text" placeholder="ค้นหาชื่อหรือรหัสสินค้า..." oninput="filterP(this.value)"/>
       <button class="btn-icon primary" onclick="showPage('scan',document.querySelectorAll('.tab')[2])"><i class="ti ti-scan"></i></button>
     </div>
     <div class="section-title">รายการสินค้า</div>
     <div class="product-list" id="product-list"></div>
-    <button class="fab" onclick="openModal('modal-add')"><i class="ti ti-plus"></i></button>
+    <button class="fab" onclick="openAddModal('')"><i class="ti ti-plus"></i></button>
   </div>
 
   <!-- ADJUST -->
   <div class="page" id="page-adjust">
     <div class="type-toggle">
-      <button class="type-btn active add" id="btn-add" onclick="setAdjType('add')"><i class="ti ti-package-import"></i>รับสินค้าเข้า</button>
-      <button class="type-btn cut" id="btn-cut" onclick="setAdjType('cut')"><i class="ti ti-package-export"></i>ตัดสต็อก</button>
+      <button class="type-btn active add" id="btn-add" onclick="setAT('add')"><i class="ti ti-package-import"></i>รับสินค้าเข้า</button>
+      <button class="type-btn cut" id="btn-cut" onclick="setAT('cut')"><i class="ti ti-package-export"></i>ตัดสต็อก</button>
     </div>
-    <div class="form-group"><label>เลือกสินค้า</label><select id="adj-product"><option value="">-- เลือกสินค้า --</option></select></div>
+    <div class="form-group"><label>เลือกสินค้า</label><select id="adj-p"><option value="">-- เลือกสินค้า --</option></select></div>
     <div class="form-group"><label>จำนวน</label>
       <div class="qty-ctrl">
-        <button onclick="changeQty(-1)">−</button>
-        <div class="qty-val" id="adj-qty">1</div>
-        <button onclick="changeQty(1)">+</button>
+        <button onclick="cQ(-1)">−</button><div class="qty-val" id="adj-qty">1</div><button onclick="cQ(1)">+</button>
       </div>
     </div>
     <div class="form-group"><label>หมายเหตุ</label><input type="text" id="adj-note" placeholder="เช่น รับจากซัพพลายเออร์..."/></div>
-    <button class="btn-primary" id="adj-submit" onclick="submitAdjust()"><i class="ti ti-check"></i> ยืนยันรับสินค้า</button>
-    <div style="margin-top:24px;">
-      <div class="section-title">ประวัติการเคลื่อนไหว</div>
-      <div id="history-list"></div>
-    </div>
+    <button class="btn-primary" id="adj-submit" onclick="submitAdj()"><i class="ti ti-check"></i> ยืนยันรับสินค้า</button>
+    <div style="margin-top:24px;"><div class="section-title">ประวัติการเคลื่อนไหว</div><div id="history-list"></div></div>
   </div>
 
   <!-- SCAN -->
   <div class="page" id="page-scan">
-    <div class="qr-wrap">
-      <!-- placeholder -->
-      <div class="qr-placeholder" id="qr-placeholder">
+    <div class="scan-wrap">
+      <div class="scan-placeholder" id="scan-ph">
         <i class="ti ti-barcode" style="font-size:52px;color:var(--border);opacity:0.5;"></i>
-        <span>กดปุ่มด้านล่างเพื่อเปิดกล้องสแกน</span>
+        <span>กดปุ่มด้านล่างเพื่อเปิดกล้อง</span>
       </div>
-      <!-- live camera -->
-      <div id="scanner-container">
-        
-        <div class="scan-aim">
-          <div class="aim-box"><div class="aim-line"></div></div>
-        </div>
+      <div id="viewport">
+        <div class="scan-guide"><div class="scan-box"><div class="scan-line"></div></div></div>
       </div>
-      <!-- info bar -->
       <div class="scan-info">
         <div class="scan-status" id="scan-status"></div>
-        <div class="last-code" id="last-code"></div>
-        <div class="scan-badges">
-          <span class="scan-badge">EAN-13</span>
-          <span class="scan-badge">EAN-8</span>
-          <span class="scan-badge">Code128</span>
-          <span class="scan-badge">Code39</span>
-          <span class="scan-badge">UPC-A</span>
-        </div>
+        <div class="scan-reading" id="scan-reading"></div>
       </div>
     </div>
 
-    <button class="btn-primary" id="cam-btn" onclick="toggleScanner()">
+    <button class="btn-primary" id="cam-btn" onclick="toggleCam()">
       <i class="ti ti-barcode"></i> เปิดกล้องสแกน Barcode
     </button>
 
@@ -220,194 +202,186 @@ html,body{height:100%;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sa
       <div class="form-group">
         <label>หรือพิมพ์รหัส Barcode</label>
         <div style="display:flex;gap:8px;">
-          <input type="text" id="manual-code" placeholder="เช่น 8850329101234" style="flex:1" onkeydown="if(event.key==='Enter')searchByCode()"/>
-          <button class="btn-icon primary" onclick="searchByCode()"><i class="ti ti-search"></i></button>
+          <input type="text" id="manual-code" placeholder="เช่น 8850329101234" style="flex:1" onkeydown="if(event.key==='Enter')manualSearch()"/>
+          <button class="btn-icon primary" onclick="manualSearch()"><i class="ti ti-search"></i></button>
         </div>
       </div>
     </div>
 
     <div id="scan-result" style="display:none;margin-top:8px;">
       <div class="section-title">สินค้าที่พบ</div>
-      <div class="product-card" id="scan-product-card" style="margin-bottom:14px;cursor:default;"></div>
+      <div class="product-card" id="scan-pc" style="margin-bottom:14px;cursor:default;"></div>
       <div class="type-toggle">
-        <button class="type-btn active add" id="scan-btn-add" onclick="setScanType('add')"><i class="ti ti-package-import"></i>รับเข้า</button>
-        <button class="type-btn cut" id="scan-btn-cut" onclick="setScanType('cut')"><i class="ti ti-package-export"></i>ตัดออก</button>
+        <button class="type-btn active add" id="sb-add" onclick="setST('add')"><i class="ti ti-package-import"></i>รับเข้า</button>
+        <button class="type-btn cut" id="sb-cut" onclick="setST('cut')"><i class="ti ti-package-export"></i>ตัดออก</button>
       </div>
       <div class="form-group"><label>จำนวน</label>
         <div class="qty-ctrl">
-          <button onclick="changeScanQty(-1)">−</button>
-          <div class="qty-val" id="scan-qty">1</div>
-          <button onclick="changeScanQty(1)">+</button>
+          <button onclick="cSQ(-1)">−</button><div class="qty-val" id="scan-qty">1</div><button onclick="cSQ(1)">+</button>
         </div>
       </div>
-      <button class="btn-primary" id="scan-submit" onclick="submitScanAdjust()"><i class="ti ti-check"></i> บันทึก</button>
+      <button class="btn-primary" id="scan-submit" onclick="submitScan()"><i class="ti ti-check"></i> บันทึก</button>
     </div>
   </div>
 
   <!-- POS -->
   <div class="page" id="page-pos">
     <div class="section-title">ระบบ POS ที่เชื่อมต่อ</div>
-    <div class="pos-card">
-      <span class="pos-status connected">● เชื่อมต่อแล้ว</span>
-      <div class="pos-name"><i class="ti ti-device-desktop" style="font-size:15px;margin-right:4px;"></i>StoreHub POS</div>
-      <div class="pos-meta">192.168.1.100 · อัปเดตล่าสุด 5 นาทีที่แล้ว</div>
+    <div class="pos-card"><span class="pos-status on">● เชื่อมต่อแล้ว</span><div class="pos-name"><i class="ti ti-device-desktop" style="font-size:15px;margin-right:4px;"></i>StoreHub POS</div><div class="pos-meta">192.168.1.100</div></div>
+    <div class="pos-card"><span class="pos-status off">○ ออฟไลน์</span><div class="pos-name"><i class="ti ti-device-tablet" style="font-size:15px;margin-right:4px;"></i>Cashier #2</div><div class="pos-meta">192.168.1.101</div></div>
+    <div style="margin-top:20px;"><div class="section-title">ส่งข้อมูลสต็อก</div>
+      <button class="btn-row" onclick="toast('ซิงก์สต็อกสำเร็จ ✓')"><i class="ti ti-refresh"></i><div><div class="rt">ซิงก์แบบ Real-time</div><div class="rs">อัปเดตสต็อกไป POS ทุกเครื่องทันที</div></div></button>
+      <button class="btn-row" onclick="exportCSV()"><i class="ti ti-table-export"></i><div><div class="rt">ส่งออกเป็น CSV</div><div class="rs">ดาวน์โหลดไฟล์นำเข้า POS Software</div></div></button>
+      <button class="btn-row" onclick="toast('ส่งข้อมูลผ่าน API สำเร็จ ✓')"><i class="ti ti-api"></i><div><div class="rt">ส่งผ่าน API / Webhook</div><div class="rs">เชื่อมต่อ REST API ของระบบ POS</div></div></button>
+      <button class="btn-row" onclick="window.print()"><i class="ti ti-printer"></i><div><div class="rt">พิมพ์รายงานสต็อก</div><div class="rs">PDF ส่งให้พนักงาน</div></div></button>
     </div>
-    <div class="pos-card">
-      <span class="pos-status offline">○ ออฟไลน์</span>
-      <div class="pos-name"><i class="ti ti-device-tablet" style="font-size:15px;margin-right:4px;"></i>Cashier #2</div>
-      <div class="pos-meta">192.168.1.101 · ไม่พบการเชื่อมต่อ</div>
-    </div>
-    <div style="margin-top:20px;">
-      <div class="section-title">ส่งข้อมูลสต็อกไป POS</div>
-      <button class="btn-outline-row" onclick="sendToPOS('realtime')"><i class="ti ti-refresh"></i><div><div class="row-title">ซิงก์แบบ Real-time</div><div class="row-sub">อัปเดตสต็อกไป POS ทุกเครื่องทันที</div></div></button>
-      <button class="btn-outline-row" onclick="exportCSV()"><i class="ti ti-table-export"></i><div><div class="row-title">ส่งออกเป็น CSV</div><div class="row-sub">ดาวน์โหลดไฟล์นำเข้า POS Software</div></div></button>
-      <button class="btn-outline-row" onclick="sendToPOS('api')"><i class="ti ti-api"></i><div><div class="row-title">ส่งผ่าน API / Webhook</div><div class="row-sub">เชื่อมต่อ REST API ของระบบ POS</div></div></button>
-      <button class="btn-outline-row" onclick="window.print()"><i class="ti ti-printer"></i><div><div class="row-title">พิมพ์รายงานสต็อก</div><div class="row-sub">ส่งให้พนักงาน POS เป็น PDF</div></div></button>
-    </div>
-    <div style="margin-top:20px;">
-      <div class="section-title">สรุปสต็อกปัจจุบัน</div>
-      <div class="pos-card" id="pos-summary"></div>
-    </div>
+    <div style="margin-top:20px;"><div class="section-title">สรุปสต็อก</div><div class="pos-card" id="pos-sum"></div></div>
   </div>
 </div>
 
 <!-- Modal: Detail -->
-<div class="modal-overlay" id="modal-detail">
+<div class="overlay" id="ov-detail">
   <div class="modal">
     <div class="modal-handle"></div>
     <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:16px;">
-      <div>
-        <div style="font-size:17px;font-weight:600;" id="detail-name"></div>
-        <div style="font-size:12px;color:var(--text-muted);font-family:monospace;margin-top:2px;" id="detail-sku"></div>
-      </div>
-      <button class="btn-icon" onclick="closeModal('modal-detail')"><i class="ti ti-x"></i></button>
+      <div><div style="font-size:17px;font-weight:600;" id="d-name"></div><div style="font-size:12px;color:var(--text-muted);font-family:monospace;margin-top:2px;" id="d-sku"></div></div>
+      <button class="btn-icon" onclick="closeOv('ov-detail')"><i class="ti ti-x"></i></button>
     </div>
-    <div class="stock-big">
-      <div class="s-label">จำนวนคงเหลือ</div>
-      <div class="s-val" id="detail-qty">0</div>
-      <div class="s-unit" id="detail-unit"></div>
-    </div>
+    <div class="stock-big"><div class="sl">จำนวนคงเหลือ</div><div class="sv" id="d-qty">0</div><div class="su" id="d-unit"></div></div>
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:16px;">
-      <div class="stat-card"><div class="label">ราคา/หน่วย</div><div class="val" style="font-size:18px;" id="detail-price"></div></div>
-      <div class="stat-card"><div class="label">สต็อกขั้นต่ำ</div><div class="val" style="font-size:18px;" id="detail-min"></div></div>
+      <div class="stat-card"><div class="label">ราคา/หน่วย</div><div class="val" style="font-size:18px;" id="d-price"></div></div>
+      <div class="stat-card"><div class="label">สต็อกขั้นต่ำ</div><div class="val" style="font-size:18px;" id="d-min"></div></div>
     </div>
     <div style="display:flex;gap:8px;">
-      <button class="btn-primary outline" style="flex:1;" onclick="quickAdjust('add')"><i class="ti ti-package-import"></i> รับเข้า</button>
-      <button class="btn-primary danger" style="flex:1;" onclick="quickAdjust('cut')"><i class="ti ti-package-export"></i> ตัดออก</button>
+      <button class="btn-primary outline" style="flex:1;" onclick="quickAdj('add')"><i class="ti ti-package-import"></i> รับเข้า</button>
+      <button class="btn-primary danger" style="flex:1;" onclick="quickAdj('cut')"><i class="ti ti-package-export"></i> ตัดออก</button>
     </div>
   </div>
 </div>
 
-<!-- Modal: Add -->
-<div class="modal-overlay" id="modal-add">
+<!-- Modal: Add Product — รับ barcode เป็น argument -->
+<div class="overlay" id="ov-add">
   <div class="modal">
     <div class="modal-handle"></div>
     <div class="modal-title">เพิ่มสินค้าใหม่</div>
-    <div class="form-group"><label>ชื่อสินค้า *</label><input type="text" id="new-name" placeholder="เช่น น้ำดื่มสิงห์ 600ml"/></div>
+    <div class="form-group"><label>ชื่อสินค้า *</label><input type="text" id="n-name" placeholder="เช่น น้ำดื่มสิงห์ 600ml"/></div>
     <div class="two-col">
-      <div class="form-group"><label>รหัส Barcode *</label><input type="text" id="new-sku" placeholder="8850329101234"/></div>
-      <div class="form-group"><label>หน่วย</label><input type="text" id="new-unit" placeholder="ชิ้น, ถุง..."/></div>
+      <div class="form-group">
+        <label>รหัส Barcode *</label>
+        <input type="text" id="n-sku" placeholder="8850329101234"/>
+      </div>
+      <div class="form-group"><label>หน่วย</label><input type="text" id="n-unit" placeholder="ชิ้น, ถุง..."/></div>
     </div>
     <div class="two-col">
-      <div class="form-group"><label>จำนวนเริ่มต้น</label><input type="number" id="new-qty" placeholder="0" min="0"/></div>
-      <div class="form-group"><label>สต็อกขั้นต่ำ</label><input type="number" id="new-min" placeholder="5" min="0"/></div>
+      <div class="form-group"><label>จำนวนเริ่มต้น</label><input type="number" id="n-qty" placeholder="0" min="0"/></div>
+      <div class="form-group"><label>สต็อกขั้นต่ำ</label><input type="number" id="n-min" placeholder="5" min="0"/></div>
     </div>
-    <div class="form-group"><label>ราคาต่อหน่วย (บาท)</label><input type="number" id="new-price" placeholder="0" min="0"/></div>
-    <button class="btn-primary" onclick="addProduct()"><i class="ti ti-plus"></i> เพิ่มสินค้า</button>
+    <div class="form-group"><label>ราคา/หน่วย (บาท)</label><input type="number" id="n-price" placeholder="0" min="0"/></div>
+    <button class="btn-primary" onclick="doAdd()"><i class="ti ti-plus"></i> เพิ่มสินค้า</button>
   </div>
 </div>
 
 <!-- Modal: Not Found -->
-<div class="modal-overlay" id="modal-notfound">
+<div class="overlay" id="ov-nf">
   <div class="modal">
     <div class="modal-handle"></div>
     <div class="modal-title">ไม่พบสินค้าในระบบ</div>
     <div style="background:var(--bg2);border-radius:var(--radius);padding:14px;margin-bottom:16px;">
-      <div style="font-size:11px;color:var(--text-muted);margin-bottom:4px;">รหัสที่สแกนได้</div>
-      <div style="font-family:monospace;font-size:18px;font-weight:700;color:var(--primary);" id="notfound-code"></div>
+      <div style="font-size:11px;color:var(--text-muted);margin-bottom:6px;">รหัสบาร์โค้ดที่สแกนได้</div>
+      <div style="font-family:monospace;font-size:20px;font-weight:700;color:var(--primary);word-break:break-all;" id="nf-code"></div>
     </div>
     <p style="font-size:13px;color:var(--text-muted);margin-bottom:16px;">ต้องการเพิ่มสินค้านี้เข้าระบบไหมครับ?</p>
     <div style="display:flex;gap:8px;">
-      <button class="btn-primary outline" style="flex:1;" onclick="closeModal('modal-notfound')">ยกเลิก</button>
-      <button class="btn-primary" style="flex:1;" onclick="addFromBarcode()"><i class="ti ti-plus"></i> เพิ่มสินค้า</button>
+      <button class="btn-primary outline" style="flex:1;" onclick="closeOv('ov-nf')">ยกเลิก</button>
+      <button class="btn-primary" style="flex:1;" onclick="addFromScan()"><i class="ti ti-plus"></i> เพิ่มสินค้า</button>
     </div>
   </div>
 </div>
 
-<div class="toast" id="toast"></div>
+<div class="toast" id="toast-el"></div>
 
+<!-- โหลด Quagga หลังสุด -->
+<script src="https://cdn.jsdelivr.net/npm/quagga@0.12.1/dist/quagga.min.js"></script>
 <script>
-let products = JSON.parse(localStorage.getItem('ss_products') || 'null') || [
-  {id:1,sku:'8850329101234',name:'น้ำดื่มสิงห์ 600ml (แพ็ค)',qty:48,unit:'แพ็ค',min:10,price:120},
+// ====== DATA ======
+let products = JSON.parse(localStorage.getItem('ss_p')||'null') || [
+  {id:1,sku:'8850329101234',name:'น้ำดื่มสิงห์ 600ml',qty:48,unit:'แพ็ค',min:10,price:120},
   {id:2,sku:'8850006102019',name:'ข้าวสาร หอมมะลิ 5กก.',qty:7,unit:'ถุง',min:10,price:220},
-  {id:3,sku:'8850006103016',name:'น้ำมันพืช ตราจิ้งจก 1L',qty:3,unit:'ขวด',min:5,price:68},
-  {id:4,sku:'8850987654321',name:'บะหมี่กึ่งสำเร็จรูป มาม่า',qty:120,unit:'ซอง',min:20,price:6},
+  {id:3,sku:'8850006103016',name:'น้ำมันพืช 1L',qty:3,unit:'ขวด',min:5,price:68},
+  {id:4,sku:'8850987654321',name:'บะหมี่กึ่งสำเร็จรูป',qty:120,unit:'ซอง',min:20,price:6},
   {id:5,sku:'8850111222333',name:'สบู่ก้อน Lux 125g',qty:2,unit:'ก้อน',min:10,price:35},
   {id:6,sku:'8850444555666',name:'ยาสีฟัน Colgate 160g',qty:25,unit:'หลอด',min:5,price:55},
   {id:7,sku:'8850777888999',name:'น้ำตาลทราย 1กก.',qty:15,unit:'ถุง',min:8,price:28},
-  {id:8,sku:'8850000111222',name:'ซีอิ๊วขาว ตราปลา 700ml',qty:9,unit:'ขวด',min:5,price:42},
+  {id:8,sku:'8850000111222',name:'ซีอิ๊วขาว 700ml',qty:9,unit:'ขวด',min:5,price:42},
 ];
-let history = JSON.parse(localStorage.getItem('ss_history') || '[]');
+let hist = JSON.parse(localStorage.getItem('ss_h')||'[]');
 let nextId = Math.max(...products.map(p=>p.id),0)+1;
-let adjType='add',adjQty=1,scanType='add',scanQty=1;
-let scannedProduct=null,selectedProduct=null,lastCode='';
-let scannerRunning=false,codeBuffer={},bufferTimer=null;
+let adjType='add', adjQty=1, scanType='add', scanQty=1;
+let selP=null, scannedP=null;
+
+// scannedBarcode: เก็บรหัสบาร์โค้ดที่สแกนได้ล่าสุด — ไม่ reset จนกว่าจะสแกนใหม่
+let scannedBarcode='';
+
+let camOn=false, voteMap={}, voteTimer=null;
 
 function save(){
-  localStorage.setItem('ss_products',JSON.stringify(products));
-  localStorage.setItem('ss_history',JSON.stringify(history.slice(0,100)));
+  localStorage.setItem('ss_p',JSON.stringify(products));
+  localStorage.setItem('ss_h',JSON.stringify(hist.slice(0,100)));
 }
-function sClass(p){return p.qty===0?'out':p.qty<p.min?'low':'ok';}
-function sLabel(p){return p.qty===0?'หมดสต็อก':`${p.qty} ${p.unit}`;}
+function sc(p){return p.qty===0?'out':p.qty<p.min?'low':'ok';}
+function sl(p){return p.qty===0?'หมดสต็อก':`${p.qty} ${p.unit}`;}
 
-function renderProducts(list){
+// ====== RENDER ======
+function renderList(list){
   document.getElementById('product-list').innerHTML=(list||products).map(p=>`
     <div class="product-card" onclick="showDetail(${p.id})">
-      <div class="info">
-        <div class="name">${p.name}</div>
-        <div class="meta"><span class="sku-badge">${p.sku}</span> · ฿${p.price.toLocaleString()}</div>
-      </div>
-      <span class="stock-pill ${sClass(p)}">${sLabel(p)}</span>
+      <div class="info"><div class="name">${p.name}</div>
+      <div class="meta"><span class="sku-badge">${p.sku}</span> · ฿${p.price.toLocaleString()}</div></div>
+      <span class="stock-pill ${sc(p)}">${sl(p)}</span>
     </div>`).join('');
 }
-function renderAdjProduct(){
-  document.getElementById('adj-product').innerHTML='<option value="">-- เลือกสินค้า --</option>'+
+function renderAdj(){
+  document.getElementById('adj-p').innerHTML='<option value="">-- เลือกสินค้า --</option>'+
     products.map(p=>`<option value="${p.id}">${p.name} (${p.qty} ${p.unit})</option>`).join('');
 }
-function renderHistory(){
+function renderHist(){
   const el=document.getElementById('history-list');
-  if(!history.length){el.innerHTML='<div style="color:var(--text-muted);font-size:13px;padding:12px 0;">ยังไม่มีประวัติ</div>';return;}
-  el.innerHTML=history.slice(0,20).map(h=>`
+  if(!hist.length){el.innerHTML='<div style="color:var(--text-muted);font-size:13px;padding:12px 0;">ยังไม่มีประวัติ</div>';return;}
+  el.innerHTML=hist.slice(0,20).map(h=>`
     <div class="history-item">
-      <div class="history-icon ${h.type}"><i class="ti ti-${h.type==='add'?'arrow-down':'arrow-up'}"></i></div>
-      <div class="h-info"><div class="h-name">${h.product}</div><div class="h-time">${h.note?h.note+' · ':''}${h.time}</div></div>
-      <span class="h-qty ${h.type}">${h.type==='add'?'+':'-'}${h.qty}</span>
+      <div class="history-icon ${h.t}"><i class="ti ti-${h.t==='add'?'arrow-down':'arrow-up'}"></i></div>
+      <div class="h-info"><div class="h-name">${h.p}</div><div class="h-time">${h.n?h.n+' · ':''}${h.tm}</div></div>
+      <span class="h-qty ${h.t}">${h.t==='add'?'+':'-'}${h.q}</span>
     </div>`).join('');
 }
 function renderPOS(){
   const low=products.filter(p=>p.qty<p.min).length;
   const total=products.reduce((s,p)=>s+p.qty*p.price,0);
-  document.getElementById('pos-summary').innerHTML=`
+  document.getElementById('pos-sum').innerHTML=`
     <div style="display:flex;justify-content:space-between;margin-bottom:8px;"><span style="font-size:13px;color:var(--text-muted);">รายการสินค้า</span><span style="font-weight:500">${products.length} รายการ</span></div>
-    <div style="display:flex;justify-content:space-between;margin-bottom:8px;"><span style="font-size:13px;color:var(--text-muted);">ใกล้หมด / หมดสต็อก</span><span style="font-weight:500;color:#854F0B">${low} รายการ</span></div>
-    <div style="display:flex;justify-content:space-between;"><span style="font-size:13px;color:var(--text-muted);">มูลค่าสต็อกรวม</span><span style="font-weight:500">฿${total.toLocaleString()}</span></div>`;
+    <div style="display:flex;justify-content:space-between;margin-bottom:8px;"><span style="font-size:13px;color:var(--text-muted);">ใกล้หมด/หมด</span><span style="font-weight:500;color:#854F0B">${low} รายการ</span></div>
+    <div style="display:flex;justify-content:space-between;"><span style="font-size:13px;color:var(--text-muted);">มูลค่าสต็อก</span><span style="font-weight:500">฿${total.toLocaleString()}</span></div>`;
 }
-function updateCounts(){
+function updateCount(){
   const low=products.filter(p=>p.qty<p.min).length;
-  document.getElementById('total-count').textContent=products.length;
-  document.getElementById('low-count').textContent=low;
+  document.getElementById('tc').textContent=products.length;
+  document.getElementById('lc').textContent=low;
   document.getElementById('low-badge').textContent=low+' ใกล้หมด';
   renderPOS();
 }
-function refresh(){renderProducts();renderAdjProduct();renderHistory();updateCounts();}
+function refresh(){renderList();renderAdj();renderHist();updateCount();}
+
+// ====== NAV ======
 function showPage(page,btn){
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
   document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
   document.getElementById('page-'+page).classList.add('active');
-  if(btn) btn.classList.add('active');
-  if(page!=='scan') stopScanner();
+  if(btn)btn.classList.add('active');
+  if(page!=='scan')stopCam();
 }
-function setAdjType(t){
+
+// ====== ADJUST ======
+function setAT(t){
   adjType=t;
   document.getElementById('btn-add').className='type-btn add'+(t==='add'?' active':'');
   document.getElementById('btn-cut').className='type-btn cut'+(t==='cut'?' active':'');
@@ -415,198 +389,205 @@ function setAdjType(t){
   b.className='btn-primary'+(t==='cut'?' danger':'');
   b.innerHTML=t==='add'?'<i class="ti ti-check"></i> ยืนยันรับสินค้า':'<i class="ti ti-check"></i> ยืนยันตัดสต็อก';
 }
-function changeQty(d){adjQty=Math.max(1,adjQty+d);document.getElementById('adj-qty').textContent=adjQty;}
-function submitAdjust(){
-  const sel=document.getElementById('adj-product');
-  if(!sel.value){showToast('กรุณาเลือกสินค้า');return;}
+function cQ(d){adjQty=Math.max(1,adjQty+d);document.getElementById('adj-qty').textContent=adjQty;}
+function submitAdj(){
+  const sel=document.getElementById('adj-p');
+  if(!sel.value){toast('กรุณาเลือกสินค้า');return;}
   const p=products.find(x=>x.id==sel.value);
-  if(adjType==='cut'&&adjQty>p.qty){showToast('⚠ สต็อกไม่เพียงพอ');return;}
+  if(adjType==='cut'&&adjQty>p.qty){toast('⚠ สต็อกไม่เพียงพอ');return;}
   p.qty+=adjType==='add'?adjQty:-adjQty;
-  addHist(adjType,p.name,adjQty,document.getElementById('adj-note').value);
-  showToast(adjType==='add'?`รับเข้า ${adjQty} ${p.unit} ✓`:`ตัดออก ${adjQty} ${p.unit} ✓`);
+  addH(adjType,p.name,adjQty,document.getElementById('adj-note').value);
+  toast(adjType==='add'?`รับเข้า ${adjQty} ${p.unit} ✓`:`ตัดออก ${adjQty} ${p.unit} ✓`);
   refresh();adjQty=1;document.getElementById('adj-qty').textContent=1;
-  document.getElementById('adj-product').value='';document.getElementById('adj-note').value='';
+  sel.value='';document.getElementById('adj-note').value='';
 }
-function addHist(type,product,qty,note){
-  const time=new Date().toLocaleTimeString('th-TH',{hour:'2-digit',minute:'2-digit'});
-  history.unshift({type,product,qty,note,time});save();
+function addH(t,p,q,n){
+  const tm=new Date().toLocaleTimeString('th-TH',{hour:'2-digit',minute:'2-digit'});
+  hist.unshift({t,p,q,n,tm});save();
 }
-function filterProducts(q){
-  renderProducts(products.filter(p=>p.name.includes(q)||p.sku.toLowerCase().includes(q.toLowerCase())));
-}
+function filterP(q){renderList(products.filter(p=>p.name.includes(q)||p.sku.includes(q)));}
 
-// ===== BARCODE SCANNER =====
-function toggleScanner(){
-  if(scannerRunning){stopScanner();}
-  else{startScanner();}
-}
+// ====== SCANNER ======
+function toggleCam(){camOn?stopCam():startCam();}
 
-function startScanner(){
-  setStatus('กำลังเปิดกล้อง...');
-  document.getElementById('qr-placeholder').style.display='none';
-  document.getElementById('scanner-container').style.display='block';
+function startCam(){
+  setStat('กำลังเปิดกล้อง...');
+  document.getElementById('scan-ph').style.display='none';
+  document.getElementById('viewport').style.display='block';
   document.getElementById('cam-btn').innerHTML='<i class="ti ti-player-stop"></i> หยุดกล้อง';
-  codeBuffer={};lastCode=''; // reset เมื่อเริ่มสแกนใหม่
+  voteMap={};
 
   Quagga.init({
     inputStream:{
-      name:'Live',
       type:'LiveStream',
-      target:document.getElementById('scanner-container'),
+      target:document.getElementById('viewport'),
       constraints:{
-        facingMode:'environment',
         width:{ideal:1280},
         height:{ideal:720},
-      },
-      area:{ // โฟกัสตรงกลาง
-        top:'25%', right:'5%', left:'5%', bottom:'25%'
+        facingMode:'environment'
       }
     },
-    locator:{
-      patchSize:'medium',
-      halfSample:false  // ปิด halfSample เพื่อความแม่นยำ
-    },
-    numOfWorkers:navigator.hardwareConcurrency||2,
-    frequency:15,
     decoder:{
-      readers:['ean_reader','ean_8_reader','code_128_reader','code_39_reader','upc_reader','upc_e_reader'],
-      debug:{drawBoundingBox:true, showFrequency:false, drawScanline:true, showPattern:false}
+      readers:['ean_reader','ean_8_reader','code_128_reader','code_39_reader','upc_reader']
     },
+    locator:{patchSize:'large',halfSample:false},
+    numOfWorkers:2,
+    frequency:10,
     locate:true
   },function(err){
     if(err){
-      const msg=err.name==='NotAllowedError'?'กรุณาอนุญาตการเข้าถึงกล้อง':'เปิดกล้องไม่สำเร็จ: '+err.message;
-      showToast(msg);setStatus(msg);stopScanner();return;
+      const msg=err.name==='NotAllowedError'?'กรุณาอนุญาตการเข้าถึงกล้อง':'เปิดกล้องไม่สำเร็จ';
+      toast(msg);setStat(msg);stopCam();return;
     }
     Quagga.start();
-    scannerRunning=true;
-    setStatus('📷 จ่อบาร์โค้ดเข้ากรอบ...');
+    camOn=true;
+    setStat('📷 จ่อบาร์โค้ดให้ตรงกรอบ...');
   });
 
-  // ใช้ majority vote: รหัสที่ detect ได้บ่อยที่สุดใน 1.5 วินาที
-  Quagga.onDetected(function(result){
-    if(!scannerRunning)return;
-    const code=result.codeResult.code;
+  Quagga.onDetected(function(r){
+    if(!camOn)return;
+    const code=r.codeResult.code;
     if(!code||code.length<6)return;
 
-    // แสดงว่ากำลัง detect อะไรอยู่
-    setLastCode('กำลังอ่าน: '+code);
+    // แสดงรหัสที่กำลังอ่าน
+    setReading('กำลังอ่าน: '+code);
 
-    codeBuffer[code]=(codeBuffer[code]||0)+1;
-    clearTimeout(bufferTimer);
-    bufferTimer=setTimeout(()=>{
-      // เลือกรหัสที่ detect ได้มากที่สุด
-      const winner=Object.entries(codeBuffer).sort((a,b)=>b[1]-a[1])[0];
-      codeBuffer={};
-      if(winner && winner[1]>=2){ // ต้องเจอ >= 2 ครั้ง
-        onCodeFound(winner[0]);
+    // ระบบ vote: ต้องเจอ code เดิม 3 ครั้งขึ้นไปใน 1.5 วิ
+    voteMap[code]=(voteMap[code]||0)+1;
+    clearTimeout(voteTimer);
+    voteTimer=setTimeout(()=>{
+      const best=Object.entries(voteMap).sort((a,b)=>b[1]-a[1])[0];
+      voteMap={};
+      if(best&&best[1]>=3){
+        onFound(best[0]);
+      } else {
+        setReading('');
       }
-    },1000);
+    },1500);
   });
 }
 
-function stopScanner(){
-  scannerRunning=false;
-  clearTimeout(bufferTimer);codeBuffer={};
+function stopCam(){
+  camOn=false;
+  clearTimeout(voteTimer);voteMap={};
   try{Quagga.stop();}catch(e){}
-  document.getElementById('qr-placeholder').style.display='flex';
-  document.getElementById('scanner-container').style.display='none';
+  document.getElementById('scan-ph').style.display='flex';
+  document.getElementById('viewport').style.display='none';
   document.getElementById('cam-btn').innerHTML='<i class="ti ti-barcode"></i> เปิดกล้องสแกน Barcode';
-  setStatus('');setLastCode('');
+  setStat('');setReading('');
 }
 
-function onCodeFound(code){
-  if(code===lastCode)return;
-  lastCode=code;
-  stopScanner();
+function onFound(code){
+  stopCam();
+  scannedBarcode=code; // ← เก็บไว้ตลอด ไม่ reset
   const p=products.find(x=>x.sku===code);
   if(p){
     showScanResult(p);
-    setStatus('✅ พบ: '+p.name);
+    setStat('✅ พบ: '+p.name);
   } else {
-    setStatus('พบรหัส: '+code);
-    setLastCode('ไม่พบในระบบ');
-    document.getElementById('notfound-code').textContent=code;
-    setTimeout(()=>openModal('modal-notfound'),200);
+    setStat('พบรหัส: '+code+' (ไม่พบในระบบ)');
+    document.getElementById('nf-code').textContent=code;
+    setTimeout(()=>openOv('ov-nf'),200);
   }
 }
 
-function setStatus(msg){document.getElementById('scan-status').textContent=msg;}
-function setLastCode(msg){document.getElementById('last-code').textContent=msg;}
+function setStat(m){document.getElementById('scan-status').textContent=m;}
+function setReading(m){document.getElementById('scan-reading').textContent=m;}
 
-function setScanType(t){
+// ====== SCAN RESULT ======
+function setST(t){
   scanType=t;
-  document.getElementById('scan-btn-add').className='type-btn add'+(t==='add'?' active':'');
-  document.getElementById('scan-btn-cut').className='type-btn cut'+(t==='cut'?' active':'');
+  document.getElementById('sb-add').className='type-btn add'+(t==='add'?' active':'');
+  document.getElementById('sb-cut').className='type-btn cut'+(t==='cut'?' active':'');
   const b=document.getElementById('scan-submit');
   b.className='btn-primary'+(t==='cut'?' danger':'');
   b.innerHTML=t==='add'?'<i class="ti ti-check"></i> บันทึกรับเข้า':'<i class="ti ti-check"></i> บันทึกตัดออก';
 }
-function changeScanQty(d){scanQty=Math.max(1,scanQty+d);document.getElementById('scan-qty').textContent=scanQty;}
+function cSQ(d){scanQty=Math.max(1,scanQty+d);document.getElementById('scan-qty').textContent=scanQty;}
 function showScanResult(p){
-  scannedProduct=p;scanQty=1;
+  scannedP=p;scanQty=1;
   document.getElementById('scan-qty').textContent=1;
-  document.getElementById('scan-product-card').innerHTML=`
+  document.getElementById('scan-pc').innerHTML=`
     <div class="info"><div class="name">${p.name}</div><div class="meta"><span class="sku-badge">${p.sku}</span></div></div>
-    <span class="stock-pill ${sClass(p)}">${sLabel(p)}</span>`;
+    <span class="stock-pill ${sc(p)}">${sl(p)}</span>`;
   document.getElementById('scan-result').style.display='block';
 }
-function searchByCode(){
+function submitScan(){
+  if(!scannedP)return;
+  const p=scannedP;
+  if(scanType==='cut'&&scanQty>p.qty){toast('⚠ สต็อกไม่เพียงพอ');return;}
+  p.qty+=scanType==='add'?scanQty:-scanQty;
+  addH(scanType,p.name,scanQty,'สแกน Barcode');
+  toast('บันทึกเรียบร้อย ✓');
+  refresh();document.getElementById('scan-result').style.display='none';
+  scannedP=null;
+}
+function manualSearch(){
   const code=document.getElementById('manual-code').value.trim();
-  if(!code){showToast('กรุณาพิมพ์รหัสสินค้า');return;}
+  if(!code){toast('กรุณาพิมพ์รหัสสินค้า');return;}
+  scannedBarcode=code;
   const p=products.find(x=>x.sku===code||x.name.includes(code));
   if(p)showScanResult(p);
-  else{
-    lastCode=code;
-    document.getElementById('notfound-code').textContent=code;
-    openModal('modal-notfound');
+  else{document.getElementById('nf-code').textContent=code;openOv('ov-nf');}
+}
+
+// ====== เพิ่มสินค้าจากบาร์โค้ดที่สแกน ======
+function addFromScan(){
+  closeOv('ov-nf');
+  // ส่ง scannedBarcode เข้า modal เพิ่มสินค้า
+  openAddModal(scannedBarcode);
+}
+
+// เปิด modal เพิ่มสินค้า พร้อมใส่ barcode ให้เลย
+function openAddModal(barcode){
+  // clear ฟอร์ม
+  ['n-name','n-sku','n-unit','n-qty','n-min','n-price'].forEach(id=>{
+    document.getElementById(id).value='';
+    document.getElementById(id).classList.remove('filled');
+  });
+  // ถ้ามี barcode ให้ใส่ทันที
+  if(barcode){
+    const skuEl=document.getElementById('n-sku');
+    skuEl.value=barcode;
+    skuEl.classList.add('filled'); // highlight สีเขียว
   }
+  openOv('ov-add');
+  // focus ที่ชื่อสินค้า
+  setTimeout(()=>document.getElementById('n-name').focus(),300);
 }
-function submitScanAdjust(){
-  if(!scannedProduct)return;
-  const p=scannedProduct;
-  if(scanType==='cut'&&scanQty>p.qty){showToast('⚠ สต็อกไม่เพียงพอ');return;}
-  p.qty+=scanType==='add'?scanQty:-scanQty;
-  addHist(scanType,p.name,scanQty,'สแกน Barcode');
-  showToast('บันทึกเรียบร้อย ✓');
-  refresh();document.getElementById('scan-result').style.display='none';
-  scannedProduct=null;
-}
-function addFromBarcode(){
-  closeModal('modal-notfound');
-  document.getElementById('new-sku').value=lastCode;
-  openModal('modal-add');
-}
-function showDetail(id){
-  selectedProduct=products.find(p=>p.id===id);if(!selectedProduct)return;
-  document.getElementById('detail-name').textContent=selectedProduct.name;
-  document.getElementById('detail-sku').textContent=selectedProduct.sku;
-  document.getElementById('detail-qty').textContent=selectedProduct.qty;
-  document.getElementById('detail-unit').textContent=selectedProduct.unit;
-  document.getElementById('detail-price').textContent='฿'+selectedProduct.price.toLocaleString();
-  document.getElementById('detail-min').textContent=selectedProduct.min+' '+selectedProduct.unit;
-  openModal('modal-detail');
-}
-function quickAdjust(type){
-  closeModal('modal-detail');
-  showPage('adjust',document.querySelectorAll('.tab')[1]);
-  setTimeout(()=>{setAdjType(type);document.getElementById('adj-product').value=selectedProduct.id;},50);
-}
-function addProduct(){
-  const name=document.getElementById('new-name').value.trim();
-  const sku=document.getElementById('new-sku').value.trim();
-  const unit=document.getElementById('new-unit').value.trim()||'ชิ้น';
-  const qty=parseInt(document.getElementById('new-qty').value)||0;
-  const min=parseInt(document.getElementById('new-min').value)||5;
-  const price=parseFloat(document.getElementById('new-price').value)||0;
-  if(!name||!sku){showToast('กรุณากรอกชื่อและรหัสสินค้า');return;}
-  if(products.find(p=>p.sku===sku)){showToast('รหัสนี้มีอยู่แล้ว');return;}
+
+function doAdd(){
+  const name=document.getElementById('n-name').value.trim();
+  const sku=document.getElementById('n-sku').value.trim();
+  const unit=document.getElementById('n-unit').value.trim()||'ชิ้น';
+  const qty=parseInt(document.getElementById('n-qty').value)||0;
+  const min=parseInt(document.getElementById('n-min').value)||5;
+  const price=parseFloat(document.getElementById('n-price').value)||0;
+  if(!name||!sku){toast('กรุณากรอกชื่อและรหัสสินค้า');return;}
+  if(products.find(p=>p.sku===sku)){toast('รหัสนี้มีอยู่แล้ว');return;}
   products.push({id:nextId++,sku,name,qty,unit,min,price});
-  save();refresh();closeModal('modal-add');
-  ['new-name','new-sku','new-unit','new-qty','new-min','new-price'].forEach(id=>document.getElementById(id).value='');
-  showToast('เพิ่มสินค้าเรียบร้อย ✓');
+  save();refresh();closeOv('ov-add');
+  toast('เพิ่มสินค้าเรียบร้อย ✓');
 }
-function sendToPOS(m){showToast(m==='realtime'?'ซิงก์สต็อกสำเร็จ ✓':'ส่งข้อมูลผ่าน API สำเร็จ ✓');}
+
+// ====== DETAIL ======
+function showDetail(id){
+  selP=products.find(p=>p.id===id);if(!selP)return;
+  document.getElementById('d-name').textContent=selP.name;
+  document.getElementById('d-sku').textContent=selP.sku;
+  document.getElementById('d-qty').textContent=selP.qty;
+  document.getElementById('d-unit').textContent=selP.unit;
+  document.getElementById('d-price').textContent='฿'+selP.price.toLocaleString();
+  document.getElementById('d-min').textContent=selP.min+' '+selP.unit;
+  openOv('ov-detail');
+}
+function quickAdj(type){
+  closeOv('ov-detail');
+  showPage('adjust',document.querySelectorAll('.tab')[1]);
+  setTimeout(()=>{setAT(type);document.getElementById('adj-p').value=selP.id;},50);
+}
+
+// ====== EXPORT ======
 function exportCSV(){
   const rows=[['Barcode','ชื่อสินค้า','จำนวน','หน่วย','ราคา','สต็อกขั้นต่ำ']];
   products.forEach(p=>rows.push([p.sku,p.name,p.qty,p.unit,p.price,p.min]));
@@ -614,12 +595,14 @@ function exportCSV(){
   const a=document.createElement('a');
   a.href=URL.createObjectURL(new Blob(['\uFEFF'+csv],{type:'text/csv;charset=utf-8'}));
   a.download='stock_'+new Date().toISOString().slice(0,10)+'.csv';
-  a.click();showToast('ดาวน์โหลด CSV เรียบร้อย ✓');
+  a.click();toast('ดาวน์โหลด CSV ✓');
 }
-function openModal(id){document.getElementById(id).classList.add('open');}
-function closeModal(id){document.getElementById(id).classList.remove('open');}
-document.querySelectorAll('.modal-overlay').forEach(m=>m.addEventListener('click',e=>{if(e.target===m)m.classList.remove('open');}));
-function showToast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2500);}
+
+// ====== MODAL HELPERS ======
+function openOv(id){document.getElementById(id).classList.add('open');}
+function closeOv(id){document.getElementById(id).classList.remove('open');}
+document.querySelectorAll('.overlay').forEach(m=>m.addEventListener('click',e=>{if(e.target===m)m.classList.remove('open');}));
+function toast(msg){const t=document.getElementById('toast-el');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2500);}
 
 refresh();
 </script>

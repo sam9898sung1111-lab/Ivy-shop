@@ -1,140 +1,138 @@
 <!DOCTYPE html>
 <html lang="th">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
-<meta name="theme-color" content="#1D9E75" />
-<meta name="apple-mobile-web-app-capable" content="yes" />
-<meta name="apple-mobile-web-app-title" content="StockSync" />
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0"/>
+<meta name="theme-color" content="#1D9E75"/>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-title" content="StockSync"/>
 <title>StockSync — ระบบเช็คสต็อกสินค้า</title>
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css" />
-<script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/@zxing/library@0.19.1/umd/index.min.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css"/>
+<script src="https://cdn.jsdelivr.net/npm/quagga@0.12.1/dist/quagga.min.js"></script>
 <style>
-* { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
-:root {
-  --primary: #1D9E75; --primary-light: #E1F5EE; --primary-dark: #0F6E56;
-  --danger: #E24B4A; --warning: #BA7517;
-  --text: #1a1a1a; --text-muted: #6b7280;
-  --bg: #ffffff; --bg2: #f5f5f0; --border: rgba(0,0,0,0.12);
-  --radius: 8px; --radius-lg: 12px;
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+:root{
+  --primary:#1D9E75;--primary-light:#E1F5EE;--primary-dark:#0F6E56;
+  --danger:#E24B4A;--warning:#BA7517;
+  --text:#1a1a1a;--text-muted:#6b7280;
+  --bg:#fff;--bg2:#f5f5f0;--border:rgba(0,0,0,0.12);
+  --radius:8px;--radius-lg:12px;
 }
-@media (prefers-color-scheme: dark) {
-  :root { --text: #f0f0f0; --text-muted: #9ca3af; --bg: #1c1c1e; --bg2: #2c2c2e; --border: rgba(255,255,255,0.12); }
+@media(prefers-color-scheme:dark){
+  :root{--text:#f0f0f0;--text-muted:#9ca3af;--bg:#1c1c1e;--bg2:#2c2c2e;--border:rgba(255,255,255,0.12);}
 }
-html, body { height: 100%; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; font-size: 14px; color: var(--text); background: var(--bg2); }
-.app { max-width: 480px; margin: 0 auto; min-height: 100vh; background: var(--bg2); }
-.topbar { background: var(--primary); color: #fff; padding: 14px 16px; display: flex; align-items: center; gap: 10px; position: sticky; top: 0; z-index: 10; }
-.topbar .title { font-size: 17px; font-weight: 600; flex: 1; }
-.topbar .badge { background: rgba(255,255,255,0.25); font-size: 11px; padding: 3px 10px; border-radius: 20px; }
-.tabs { display: flex; background: var(--bg); border-bottom: 0.5px solid var(--border); position: sticky; top: 52px; z-index: 9; }
-.tab { flex: 1; padding: 10px 4px; text-align: center; font-size: 11px; cursor: pointer; color: var(--text-muted); border: none; background: none; display: flex; flex-direction: column; align-items: center; gap: 3px; }
-.tab i { font-size: 20px; }
-.tab.active { color: var(--primary); border-bottom: 2px solid var(--primary); }
-.page { padding: 12px; display: none; }
-.page.active { display: block; }
-.search-bar { display: flex; gap: 8px; margin-bottom: 12px; }
-.search-bar input { flex: 1; padding: 10px 14px; border: 0.5px solid var(--border); border-radius: var(--radius); font-size: 14px; background: var(--bg); color: var(--text); outline: none; }
-.search-bar input:focus { border-color: var(--primary); }
-.btn-icon { width: 42px; height: 42px; border: 0.5px solid var(--border); border-radius: var(--radius); background: var(--bg); cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 20px; color: var(--text-muted); flex-shrink: 0; }
-.btn-icon.primary { background: var(--primary-light); color: var(--primary); border-color: var(--primary); }
-.stats-row { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; margin-bottom: 12px; }
-.stat-card { background: var(--bg); border-radius: var(--radius); padding: 12px 14px; border: 0.5px solid var(--border); }
-.stat-card .label { font-size: 11px; color: var(--text-muted); margin-bottom: 4px; }
-.stat-card .val { font-size: 24px; font-weight: 600; }
-.stat-card.warn .val { color: var(--warning); }
-.stat-card.ok .val { color: var(--primary); }
-.product-list { display: flex; flex-direction: column; gap: 8px; padding-bottom: 80px; }
-.product-card { background: var(--bg); border: 0.5px solid var(--border); border-radius: var(--radius-lg); padding: 12px 14px; display: flex; align-items: center; gap: 10px; cursor: pointer; }
-.product-card:active { background: var(--primary-light); border-color: var(--primary); }
-.sku-badge { background: var(--bg2); color: var(--text-muted); font-size: 10px; padding: 2px 6px; border-radius: 4px; font-family: monospace; }
-.product-card .info { flex: 1; min-width: 0; }
-.product-card .name { font-size: 14px; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.product-card .meta { font-size: 11px; color: var(--text-muted); margin-top: 3px; }
-.stock-pill { font-size: 12px; font-weight: 500; padding: 4px 10px; border-radius: 20px; white-space: nowrap; }
-.stock-pill.ok { background: #E1F5EE; color: #085041; }
-.stock-pill.low { background: #FAEEDA; color: #633806; }
-.stock-pill.out { background: #FCEBEB; color: #791F1F; }
-.fab { position: fixed; bottom: 24px; right: calc(50% - 228px); background: var(--primary); color: #fff; border: none; border-radius: 50%; width: 56px; height: 56px; font-size: 28px; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 16px rgba(29,158,117,0.4); z-index: 8; }
-.fab:active { transform: scale(0.93); }
-.section-title { font-size: 11px; color: var(--text-muted); font-weight: 600; margin-bottom: 10px; letter-spacing: 0.8px; text-transform: uppercase; }
-.form-group { margin-bottom: 14px; }
-.form-group label { font-size: 12px; color: var(--text-muted); display: block; margin-bottom: 5px; font-weight: 500; }
-.form-group input, .form-group select { width: 100%; padding: 11px 14px; border: 0.5px solid var(--border); border-radius: var(--radius); font-size: 14px; background: var(--bg); color: var(--text); outline: none; -webkit-appearance: none; }
-.form-group input:focus, .form-group select:focus { border-color: var(--primary); }
-.qty-ctrl { display: flex; align-items: center; gap: 16px; }
-.qty-ctrl button { width: 42px; height: 42px; border-radius: 50%; border: 0.5px solid var(--border); background: var(--bg2); font-size: 22px; cursor: pointer; color: var(--text); display: flex; align-items: center; justify-content: center; }
-.qty-ctrl .qty-val { font-size: 26px; font-weight: 600; min-width: 48px; text-align: center; }
-.type-toggle { display: flex; gap: 8px; margin-bottom: 16px; }
-.type-btn { flex: 1; padding: 11px; border: 0.5px solid var(--border); border-radius: var(--radius); background: var(--bg2); cursor: pointer; font-size: 13px; color: var(--text-muted); display: flex; align-items: center; justify-content: center; gap: 6px; font-weight: 500; }
-.type-btn.active.add { background: #E1F5EE; color: #085041; border-color: var(--primary); }
-.type-btn.active.cut { background: #FCEBEB; color: #791F1F; border-color: var(--danger); }
-.btn-primary { width: 100%; padding: 14px; background: var(--primary); color: #fff; border: none; border-radius: var(--radius); font-size: 15px; cursor: pointer; font-weight: 600; margin-top: 4px; display: flex; align-items: center; justify-content: center; gap: 8px; }
-.btn-primary:active { opacity: 0.85; }
-.btn-primary.danger { background: var(--danger); }
-.btn-primary.outline { background: transparent; color: var(--primary); border: 1px solid var(--primary); }
+html,body{height:100%;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:14px;color:var(--text);background:var(--bg2);}
+.app{max-width:480px;margin:0 auto;min-height:100vh;background:var(--bg2);}
+.topbar{background:var(--primary);color:#fff;padding:14px 16px;display:flex;align-items:center;gap:10px;position:sticky;top:0;z-index:10;}
+.topbar .title{font-size:17px;font-weight:600;flex:1;}
+.topbar .badge{background:rgba(255,255,255,0.25);font-size:11px;padding:3px 10px;border-radius:20px;}
+.tabs{display:flex;background:var(--bg);border-bottom:0.5px solid var(--border);position:sticky;top:52px;z-index:9;}
+.tab{flex:1;padding:10px 4px;text-align:center;font-size:11px;cursor:pointer;color:var(--text-muted);border:none;background:none;display:flex;flex-direction:column;align-items:center;gap:3px;}
+.tab i{font-size:20px;}
+.tab.active{color:var(--primary);border-bottom:2px solid var(--primary);}
+.page{padding:12px;display:none;}
+.page.active{display:block;}
+.search-bar{display:flex;gap:8px;margin-bottom:12px;}
+.search-bar input{flex:1;padding:10px 14px;border:0.5px solid var(--border);border-radius:var(--radius);font-size:14px;background:var(--bg);color:var(--text);outline:none;}
+.search-bar input:focus{border-color:var(--primary);}
+.btn-icon{width:42px;height:42px;border:0.5px solid var(--border);border-radius:var(--radius);background:var(--bg);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:20px;color:var(--text-muted);flex-shrink:0;}
+.btn-icon.primary{background:var(--primary-light);color:var(--primary);border-color:var(--primary);}
+.stats-row{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-bottom:12px;}
+.stat-card{background:var(--bg);border-radius:var(--radius);padding:12px 14px;border:0.5px solid var(--border);}
+.stat-card .label{font-size:11px;color:var(--text-muted);margin-bottom:4px;}
+.stat-card .val{font-size:24px;font-weight:600;}
+.stat-card.warn .val{color:var(--warning);}
+.stat-card.ok .val{color:var(--primary);}
+.product-list{display:flex;flex-direction:column;gap:8px;padding-bottom:80px;}
+.product-card{background:var(--bg);border:0.5px solid var(--border);border-radius:var(--radius-lg);padding:12px 14px;display:flex;align-items:center;gap:10px;cursor:pointer;}
+.product-card:active{background:var(--primary-light);border-color:var(--primary);}
+.sku-badge{background:var(--bg2);color:var(--text-muted);font-size:10px;padding:2px 6px;border-radius:4px;font-family:monospace;}
+.product-card .info{flex:1;min-width:0;}
+.product-card .name{font-size:14px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.product-card .meta{font-size:11px;color:var(--text-muted);margin-top:3px;}
+.stock-pill{font-size:12px;font-weight:500;padding:4px 10px;border-radius:20px;white-space:nowrap;}
+.stock-pill.ok{background:#E1F5EE;color:#085041;}
+.stock-pill.low{background:#FAEEDA;color:#633806;}
+.stock-pill.out{background:#FCEBEB;color:#791F1F;}
+.fab{position:fixed;bottom:24px;right:calc(50% - 228px);background:var(--primary);color:#fff;border:none;border-radius:50%;width:56px;height:56px;font-size:28px;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 16px rgba(29,158,117,0.4);z-index:8;}
+.fab:active{transform:scale(0.93);}
+.section-title{font-size:11px;color:var(--text-muted);font-weight:600;margin-bottom:10px;letter-spacing:0.8px;text-transform:uppercase;}
+.form-group{margin-bottom:14px;}
+.form-group label{font-size:12px;color:var(--text-muted);display:block;margin-bottom:5px;font-weight:500;}
+.form-group input,.form-group select{width:100%;padding:11px 14px;border:0.5px solid var(--border);border-radius:var(--radius);font-size:14px;background:var(--bg);color:var(--text);outline:none;-webkit-appearance:none;}
+.form-group input:focus,.form-group select:focus{border-color:var(--primary);}
+.qty-ctrl{display:flex;align-items:center;gap:16px;}
+.qty-ctrl button{width:42px;height:42px;border-radius:50%;border:0.5px solid var(--border);background:var(--bg2);font-size:22px;cursor:pointer;color:var(--text);display:flex;align-items:center;justify-content:center;}
+.qty-ctrl .qty-val{font-size:26px;font-weight:600;min-width:48px;text-align:center;}
+.type-toggle{display:flex;gap:8px;margin-bottom:16px;}
+.type-btn{flex:1;padding:11px;border:0.5px solid var(--border);border-radius:var(--radius);background:var(--bg2);cursor:pointer;font-size:13px;color:var(--text-muted);display:flex;align-items:center;justify-content:center;gap:6px;font-weight:500;}
+.type-btn.active.add{background:#E1F5EE;color:#085041;border-color:var(--primary);}
+.type-btn.active.cut{background:#FCEBEB;color:#791F1F;border-color:var(--danger);}
+.btn-primary{width:100%;padding:14px;background:var(--primary);color:#fff;border:none;border-radius:var(--radius);font-size:15px;cursor:pointer;font-weight:600;margin-top:4px;display:flex;align-items:center;justify-content:center;gap:8px;}
+.btn-primary:active{opacity:0.85;}
+.btn-primary.danger{background:var(--danger);}
+.btn-primary.outline{background:transparent;color:var(--primary);border:1px solid var(--primary);}
 
 /* Scanner */
-.qr-wrap { background: var(--bg); border: 0.5px solid var(--border); border-radius: var(--radius-lg); padding: 16px; text-align: center; margin-bottom: 16px; }
-.cam-box { position: relative; width: 100%; max-width: 320px; margin: 0 auto 10px; border-radius: var(--radius); overflow: hidden; background: #000; display: none; }
-.cam-box video { width: 100%; display: block; max-height: 240px; object-fit: cover; }
-.cam-box canvas { position: absolute; top: 0; left: 0; width: 100%; height: 100%; opacity: 0; pointer-events: none; }
-.scan-overlay { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; pointer-events: none; }
-/* Barcode viewfinder: wide rectangle */
-.scan-box { width: 80%; height: 80px; border: 2px solid var(--primary); border-radius: 6px; position: relative; }
-.sc { position: absolute; width: 14px; height: 14px; border-color: #fff; border-style: solid; }
-.sc.tl { top:-1px;left:-1px;border-width:3px 0 0 3px;border-radius:4px 0 0 0; }
-.sc.tr { top:-1px;right:-1px;border-width:3px 3px 0 0;border-radius:0 4px 0 0; }
-.sc.bl { bottom:-1px;left:-1px;border-width:0 0 3px 3px;border-radius:0 0 0 4px; }
-.sc.br { bottom:-1px;right:-1px;border-width:0 3px 3px 0;border-radius:0 0 4px 0; }
-.sline { position: absolute; width: 90%; height: 2px; background: rgba(29,158,117,0.9); left: 5%; top: 50%; transform: translateY(-50%); }
-.qr-placeholder { width: 100%; height: 120px; display: flex; flex-direction: column; align-items: center; justify-content: center; background: var(--bg2); border-radius: var(--radius); margin-bottom: 10px; gap: 8px; }
-.qr-placeholder span { font-size: 12px; color: var(--text-muted); }
-.qr-hint { font-size: 12px; color: var(--text-muted); }
-.scan-status { font-size: 13px; color: var(--primary); font-weight: 500; margin-top: 8px; min-height: 20px; }
-.scan-type-info { display: flex; gap: 6px; justify-content: center; flex-wrap: wrap; margin-bottom: 10px; }
-.scan-badge { font-size: 10px; background: var(--bg2); color: var(--text-muted); padding: 2px 8px; border-radius: 20px; }
+.qr-wrap{background:var(--bg);border:0.5px solid var(--border);border-radius:var(--radius-lg);padding:14px;text-align:center;margin-bottom:14px;}
+#scanner-container{position:relative;width:100%;max-width:340px;margin:0 auto 10px;border-radius:var(--radius);overflow:hidden;background:#000;display:none;}
+#scanner-container video{width:100%;display:block;max-height:220px;object-fit:cover;}
+#scanner-container canvas.drawingBuffer{position:absolute;top:0;left:0;width:100%!important;height:100%!important;}
+.scan-frame{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;pointer-events:none;}
+.scan-rect{width:85%;height:70px;border:2px solid var(--primary);border-radius:6px;position:relative;box-shadow:0 0 0 9999px rgba(0,0,0,0.35);}
+.scan-rect::before{content:'';position:absolute;left:5%;right:5%;top:50%;height:2px;background:rgba(29,158,117,0.9);transform:translateY(-50%);animation:scanpulse 1.5s ease-in-out infinite;}
+@keyframes scanpulse{0%,100%{opacity:0.4;}50%{opacity:1;}}
+.sc{position:absolute;width:14px;height:14px;border-color:#fff;border-style:solid;}
+.sc.tl{top:-1px;left:-1px;border-width:3px 0 0 3px;border-radius:4px 0 0 0;}
+.sc.tr{top:-1px;right:-1px;border-width:3px 3px 0 0;border-radius:0 4px 0 0;}
+.sc.bl{bottom:-1px;left:-1px;border-width:0 0 3px 3px;border-radius:0 0 0 4px;}
+.sc.br{bottom:-1px;right:-1px;border-width:0 3px 3px 0;border-radius:0 0 4px 0;}
+
+.qr-placeholder{width:100%;height:110px;display:flex;flex-direction:column;align-items:center;justify-content:center;background:var(--bg2);border-radius:var(--radius);margin-bottom:10px;gap:8px;}
+.qr-placeholder span{font-size:12px;color:var(--text-muted);}
+.scan-badges{display:flex;gap:5px;justify-content:center;flex-wrap:wrap;margin-bottom:8px;}
+.scan-badge{font-size:10px;background:var(--bg2);color:var(--text-muted);padding:2px 8px;border-radius:20px;}
+.scan-status{font-size:13px;font-weight:500;margin-top:6px;min-height:18px;color:var(--primary);}
 
 /* History */
-.history-item { display: flex; align-items: center; gap: 10px; padding: 12px 0; border-bottom: 0.5px solid var(--border); }
-.history-icon { width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0; }
-.history-icon.add { background: #E1F5EE; color: #085041; }
-.history-icon.cut { background: #FCEBEB; color: #791F1F; }
-.h-info { flex: 1; min-width: 0; }
-.h-name { font-size: 13px; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.h-time { font-size: 11px; color: var(--text-muted); margin-top: 2px; }
-.h-qty { font-weight: 600; font-size: 15px; }
-.h-qty.add { color: #085041; } .h-qty.cut { color: #791F1F; }
+.history-item{display:flex;align-items:center;gap:10px;padding:12px 0;border-bottom:0.5px solid var(--border);}
+.history-icon{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;}
+.history-icon.add{background:#E1F5EE;color:#085041;}
+.history-icon.cut{background:#FCEBEB;color:#791F1F;}
+.h-info{flex:1;min-width:0;}
+.h-name{font-size:13px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.h-time{font-size:11px;color:var(--text-muted);margin-top:2px;}
+.h-qty{font-weight:600;font-size:15px;}
+.h-qty.add{color:#085041;}.h-qty.cut{color:#791F1F;}
 
 /* POS */
-.pos-card { background: var(--bg); border: 0.5px solid var(--border); border-radius: var(--radius-lg); padding: 14px; margin-bottom: 10px; }
-.pos-card .pos-name { font-size: 14px; font-weight: 500; margin-bottom: 3px; }
-.pos-card .pos-meta { font-size: 12px; color: var(--text-muted); }
-.pos-status { font-size: 11px; padding: 3px 10px; border-radius: 20px; float: right; font-weight: 500; }
-.pos-status.connected { background: #E1F5EE; color: #085041; }
-.pos-status.offline { background: var(--bg2); color: var(--text-muted); }
-.btn-outline-row { padding: 13px 14px; border: 0.5px solid var(--border); border-radius: var(--radius); background: var(--bg); cursor: pointer; font-size: 13px; color: var(--text); display: flex; align-items: center; gap: 12px; text-align: left; width: 100%; margin-bottom: 8px; }
-.btn-outline-row:active { background: var(--primary-light); }
-.btn-outline-row i { font-size: 22px; color: var(--primary); flex-shrink: 0; }
-.btn-outline-row .row-title { font-weight: 500; font-size: 14px; }
-.btn-outline-row .row-sub { font-size: 11px; color: var(--text-muted); margin-top: 2px; }
+.pos-card{background:var(--bg);border:0.5px solid var(--border);border-radius:var(--radius-lg);padding:14px;margin-bottom:10px;}
+.pos-card .pos-name{font-size:14px;font-weight:500;margin-bottom:3px;}
+.pos-card .pos-meta{font-size:12px;color:var(--text-muted);}
+.pos-status{font-size:11px;padding:3px 10px;border-radius:20px;float:right;font-weight:500;}
+.pos-status.connected{background:#E1F5EE;color:#085041;}
+.pos-status.offline{background:var(--bg2);color:var(--text-muted);}
+.btn-outline-row{padding:13px 14px;border:0.5px solid var(--border);border-radius:var(--radius);background:var(--bg);cursor:pointer;font-size:13px;color:var(--text);display:flex;align-items:center;gap:12px;text-align:left;width:100%;margin-bottom:8px;}
+.btn-outline-row:active{background:var(--primary-light);}
+.btn-outline-row i{font-size:22px;color:var(--primary);flex-shrink:0;}
+.btn-outline-row .row-title{font-weight:500;font-size:14px;}
+.btn-outline-row .row-sub{font-size:11px;color:var(--text-muted);margin-top:2px;}
 
 /* Modal */
-.modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 100; display: none; align-items: flex-end; justify-content: center; }
-.modal-overlay.open { display: flex; }
-.modal { background: var(--bg); border-radius: 20px 20px 0 0; padding: 20px 16px 32px; width: 100%; max-width: 480px; max-height: 90vh; overflow-y: auto; }
-.modal-handle { width: 36px; height: 4px; background: var(--border); border-radius: 2px; margin: 0 auto 18px; }
-.modal-title { font-size: 17px; font-weight: 600; margin-bottom: 18px; }
-.two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-.stock-big { text-align: center; padding: 20px; background: var(--bg2); border-radius: var(--radius); margin-bottom: 16px; }
-.stock-big .s-label { font-size: 12px; color: var(--text-muted); margin-bottom: 4px; }
-.stock-big .s-val { font-size: 42px; font-weight: 700; color: var(--primary); line-height: 1; }
-.stock-big .s-unit { font-size: 14px; color: var(--text-muted); margin-top: 4px; }
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:100;display:none;align-items:flex-end;justify-content:center;}
+.modal-overlay.open{display:flex;}
+.modal{background:var(--bg);border-radius:20px 20px 0 0;padding:20px 16px 32px;width:100%;max-width:480px;max-height:90vh;overflow-y:auto;}
+.modal-handle{width:36px;height:4px;background:var(--border);border-radius:2px;margin:0 auto 18px;}
+.modal-title{font-size:17px;font-weight:600;margin-bottom:18px;}
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.stock-big{text-align:center;padding:20px;background:var(--bg2);border-radius:var(--radius);margin-bottom:16px;}
+.stock-big .s-label{font-size:12px;color:var(--text-muted);margin-bottom:4px;}
+.stock-big .s-val{font-size:42px;font-weight:700;color:var(--primary);line-height:1;}
+.stock-big .s-unit{font-size:14px;color:var(--text-muted);margin-top:4px;}
 
-/* Toast */
-.toast { position: fixed; bottom: 90px; left: 50%; transform: translateX(-50%) translateY(20px); background: rgba(15,15,15,0.9); color: #fff; padding: 10px 20px; border-radius: 24px; font-size: 13px; opacity: 0; transition: all 0.25s; pointer-events: none; z-index: 200; white-space: nowrap; }
-.toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
-@media (max-width: 380px) { .fab { right: 16px; } }
+.toast{position:fixed;bottom:90px;left:50%;transform:translateX(-50%) translateY(20px);background:rgba(15,15,15,0.9);color:#fff;padding:10px 20px;border-radius:24px;font-size:13px;opacity:0;transition:all 0.25s;pointer-events:none;z-index:200;white-space:nowrap;}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+@media(max-width:380px){.fab{right:16px;}}
 </style>
 </head>
 <body>
@@ -158,7 +156,7 @@ html, body { height: 100%; font-family: -apple-system, BlinkMacSystemFont, 'Sego
       <div class="stat-card warn"><div class="label">ใกล้หมด / หมด</div><div class="val" id="low-count">0</div></div>
     </div>
     <div class="search-bar">
-      <input type="text" placeholder="ค้นหาชื่อหรือรหัสสินค้า..." oninput="filterProducts(this.value)" />
+      <input type="text" placeholder="ค้นหาชื่อหรือรหัสสินค้า..." oninput="filterProducts(this.value)"/>
       <button class="btn-icon primary" onclick="showPage('scan',document.querySelectorAll('.tab')[2])"><i class="ti ti-scan"></i></button>
     </div>
     <div class="section-title">รายการสินค้า</div>
@@ -180,7 +178,7 @@ html, body { height: 100%; font-family: -apple-system, BlinkMacSystemFont, 'Sego
         <button onclick="changeQty(1)">+</button>
       </div>
     </div>
-    <div class="form-group"><label>หมายเหตุ</label><input type="text" id="adj-note" placeholder="เช่น รับจากซัพพลายเออร์..." /></div>
+    <div class="form-group"><label>หมายเหตุ</label><input type="text" id="adj-note" placeholder="เช่น รับจากซัพพลายเออร์..."/></div>
     <button class="btn-primary" id="adj-submit" onclick="submitAdjust()"><i class="ti ti-check"></i> ยืนยันรับสินค้า</button>
     <div style="margin-top:24px;">
       <div class="section-title">ประวัติการเคลื่อนไหว</div>
@@ -195,19 +193,16 @@ html, body { height: 100%; font-family: -apple-system, BlinkMacSystemFont, 'Sego
         <i class="ti ti-barcode" style="font-size:48px;color:var(--border);opacity:0.5;"></i>
         <span>พร้อมสแกน Barcode / QR Code</span>
       </div>
-      <div class="cam-box" id="cam-box">
-        <video id="qr-video" autoplay playsinline muted></video>
-        <canvas id="qr-canvas"></canvas>
-        <div class="scan-overlay">
-          <div class="scan-box">
+      <div id="scanner-container">
+        <video id="scanner-video" autoplay playsinline muted></video>
+        <div class="scan-frame">
+          <div class="scan-rect">
             <div class="sc tl"></div><div class="sc tr"></div>
             <div class="sc bl"></div><div class="sc br"></div>
-            <div class="sline"></div>
           </div>
         </div>
       </div>
-      <div class="qr-hint">รองรับ EAN-13, EAN-8, Code128, QR Code และอื่นๆ</div>
-      <div class="scan-type-info">
+      <div class="scan-badges">
         <span class="scan-badge">EAN-13</span>
         <span class="scan-badge">EAN-8</span>
         <span class="scan-badge">Code128</span>
@@ -218,15 +213,15 @@ html, body { height: 100%; font-family: -apple-system, BlinkMacSystemFont, 'Sego
       <div class="scan-status" id="scan-status"></div>
     </div>
 
-    <button class="btn-primary" id="cam-btn" onclick="toggleCamera()">
-      <i class="ti ti-barcode"></i> เปิดกล้องสแกน Barcode / QR
+    <button class="btn-primary" id="cam-btn" onclick="toggleScanner()">
+      <i class="ti ti-barcode"></i> เปิดกล้องสแกน Barcode
     </button>
 
     <div style="margin-top:14px;">
       <div class="form-group">
-        <label>หรือพิมพ์รหัสสินค้า / บาร์โค้ด</label>
+        <label>หรือพิมพ์รหัส Barcode</label>
         <div style="display:flex;gap:8px;">
-          <input type="text" id="manual-code" placeholder="เช่น 8850329101234" style="flex:1" onkeydown="if(event.key==='Enter')searchByCode()" />
+          <input type="text" id="manual-code" placeholder="เช่น 8850329101234" style="flex:1" onkeydown="if(event.key==='Enter')searchByCode()"/>
           <button class="btn-icon primary" onclick="searchByCode()"><i class="ti ti-search"></i></button>
         </div>
       </div>
@@ -277,7 +272,7 @@ html, body { height: 100%; font-family: -apple-system, BlinkMacSystemFont, 'Sego
   </div>
 </div>
 
-<!-- Modal: Product Detail -->
+<!-- Modal: Detail -->
 <div class="modal-overlay" id="modal-detail">
   <div class="modal">
     <div class="modal-handle"></div>
@@ -309,27 +304,30 @@ html, body { height: 100%; font-family: -apple-system, BlinkMacSystemFont, 'Sego
   <div class="modal">
     <div class="modal-handle"></div>
     <div class="modal-title">เพิ่มสินค้าใหม่</div>
-    <div class="form-group"><label>ชื่อสินค้า *</label><input type="text" id="new-name" placeholder="เช่น น้ำดื่มสิงห์ 600ml" /></div>
+    <div class="form-group"><label>ชื่อสินค้า *</label><input type="text" id="new-name" placeholder="เช่น น้ำดื่มสิงห์ 600ml"/></div>
     <div class="two-col">
-      <div class="form-group"><label>รหัส Barcode / SKU *</label><input type="text" id="new-sku" placeholder="8850329101234" /></div>
-      <div class="form-group"><label>หน่วย</label><input type="text" id="new-unit" placeholder="ชิ้น, ถุง..." /></div>
+      <div class="form-group"><label>รหัส Barcode / SKU *</label><input type="text" id="new-sku" placeholder="8850329101234"/></div>
+      <div class="form-group"><label>หน่วย</label><input type="text" id="new-unit" placeholder="ชิ้น, ถุง..."/></div>
     </div>
     <div class="two-col">
-      <div class="form-group"><label>จำนวนเริ่มต้น</label><input type="number" id="new-qty" placeholder="0" min="0" /></div>
-      <div class="form-group"><label>สต็อกขั้นต่ำ</label><input type="number" id="new-min" placeholder="5" min="0" /></div>
+      <div class="form-group"><label>จำนวนเริ่มต้น</label><input type="number" id="new-qty" placeholder="0" min="0"/></div>
+      <div class="form-group"><label>สต็อกขั้นต่ำ</label><input type="number" id="new-min" placeholder="5" min="0"/></div>
     </div>
-    <div class="form-group"><label>ราคาต่อหน่วย (บาท)</label><input type="number" id="new-price" placeholder="0" min="0" /></div>
+    <div class="form-group"><label>ราคาต่อหน่วย (บาท)</label><input type="number" id="new-price" placeholder="0" min="0"/></div>
     <button class="btn-primary" onclick="addProduct()"><i class="ti ti-plus"></i> เพิ่มสินค้า</button>
   </div>
 </div>
 
-<!-- Modal: ไม่พบสินค้า -->
+<!-- Modal: Not Found -->
 <div class="modal-overlay" id="modal-notfound">
   <div class="modal">
     <div class="modal-handle"></div>
     <div class="modal-title">ไม่พบสินค้าในระบบ</div>
-    <div style="background:var(--bg2);border-radius:var(--radius);padding:12px;margin-bottom:16px;font-family:monospace;font-size:13px;" id="notfound-code"></div>
-    <p style="font-size:13px;color:var(--text-muted);margin-bottom:16px;">ต้องการเพิ่มสินค้านี้ในระบบไหมครับ?</p>
+    <div style="background:var(--bg2);border-radius:var(--radius);padding:12px;margin-bottom:16px;">
+      <div style="font-size:11px;color:var(--text-muted);margin-bottom:4px;">รหัสที่สแกนได้</div>
+      <div style="font-family:monospace;font-size:16px;font-weight:600;" id="notfound-code"></div>
+    </div>
+    <p style="font-size:13px;color:var(--text-muted);margin-bottom:16px;">ต้องการเพิ่มสินค้านี้เข้าระบบไหมครับ?</p>
     <div style="display:flex;gap:8px;">
       <button class="btn-primary outline" style="flex:1;" onclick="closeModal('modal-notfound')">ยกเลิก</button>
       <button class="btn-primary" style="flex:1;" onclick="addFromBarcode()"><i class="ti ti-plus"></i> เพิ่มสินค้า</button>
@@ -351,33 +349,32 @@ let products = JSON.parse(localStorage.getItem('ss_products') || 'null') || [
   {id:8,sku:'8850000111222',name:'ซีอิ๊วขาว ตราปลา 700ml',qty:9,unit:'ขวด',min:5,price:42},
 ];
 let history = JSON.parse(localStorage.getItem('ss_history') || '[]');
-let nextId = Math.max(...products.map(p=>p.id), 0) + 1;
-let adjType='add', adjQty=1, scanType='add', scanQty=1;
-let scannedProduct=null, selectedProduct=null, lastScannedCode='';
-let cameraStream=null, zxingReader=null, camRunning=false;
+let nextId = Math.max(...products.map(p=>p.id),0)+1;
+let adjType='add',adjQty=1,scanType='add',scanQty=1;
+let scannedProduct=null,selectedProduct=null,lastCode='',scannerRunning=false,debounce=null;
 
-function save() {
-  localStorage.setItem('ss_products', JSON.stringify(products));
-  localStorage.setItem('ss_history', JSON.stringify(history.slice(0,100)));
+function save(){
+  localStorage.setItem('ss_products',JSON.stringify(products));
+  localStorage.setItem('ss_history',JSON.stringify(history.slice(0,100)));
 }
-function stockClass(p){return p.qty===0?'out':p.qty<p.min?'low':'ok';}
-function stockLabel(p){return p.qty===0?'หมดสต็อก':`${p.qty} ${p.unit}`;}
+function sClass(p){return p.qty===0?'out':p.qty<p.min?'low':'ok';}
+function sLabel(p){return p.qty===0?'หมดสต็อก':`${p.qty} ${p.unit}`;}
 
-function renderProducts(list) {
+function renderProducts(list){
   document.getElementById('product-list').innerHTML=(list||products).map(p=>`
     <div class="product-card" onclick="showDetail(${p.id})">
       <div class="info">
         <div class="name">${p.name}</div>
         <div class="meta"><span class="sku-badge">${p.sku}</span> · ฿${p.price.toLocaleString()}</div>
       </div>
-      <span class="stock-pill ${stockClass(p)}">${stockLabel(p)}</span>
+      <span class="stock-pill ${sClass(p)}">${sLabel(p)}</span>
     </div>`).join('');
 }
-function renderAdjProduct() {
+function renderAdjProduct(){
   document.getElementById('adj-product').innerHTML='<option value="">-- เลือกสินค้า --</option>'+
     products.map(p=>`<option value="${p.id}">${p.name} (${p.qty} ${p.unit})</option>`).join('');
 }
-function renderHistory() {
+function renderHistory(){
   const el=document.getElementById('history-list');
   if(!history.length){el.innerHTML='<div style="color:var(--text-muted);font-size:13px;padding:12px 0;">ยังไม่มีประวัติ</div>';return;}
   el.innerHTML=history.slice(0,20).map(h=>`
@@ -387,7 +384,7 @@ function renderHistory() {
       <span class="h-qty ${h.type}">${h.type==='add'?'+':'-'}${h.qty}</span>
     </div>`).join('');
 }
-function renderPOSSummary() {
+function renderPOS(){
   const low=products.filter(p=>p.qty<p.min).length;
   const total=products.reduce((s,p)=>s+p.qty*p.price,0);
   document.getElementById('pos-summary').innerHTML=`
@@ -395,24 +392,23 @@ function renderPOSSummary() {
     <div style="display:flex;justify-content:space-between;margin-bottom:8px;"><span style="font-size:13px;color:var(--text-muted);">ใกล้หมด / หมดสต็อก</span><span style="font-weight:500;color:#854F0B">${low} รายการ</span></div>
     <div style="display:flex;justify-content:space-between;"><span style="font-size:13px;color:var(--text-muted);">มูลค่าสต็อกรวม</span><span style="font-weight:500">฿${total.toLocaleString()}</span></div>`;
 }
-function updateCounts() {
+function updateCounts(){
   const low=products.filter(p=>p.qty<p.min).length;
   document.getElementById('total-count').textContent=products.length;
   document.getElementById('low-count').textContent=low;
   document.getElementById('low-badge').textContent=low+' ใกล้หมด';
-  renderPOSSummary();
+  renderPOS();
 }
 function refresh(){renderProducts();renderAdjProduct();renderHistory();updateCounts();}
 
-function showPage(page,btn) {
+function showPage(page,btn){
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
   document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
   document.getElementById('page-'+page).classList.add('active');
   if(btn) btn.classList.add('active');
-  if(page!=='scan') stopCamera();
+  if(page!=='scan') stopScanner();
 }
-
-function setAdjType(t) {
+function setAdjType(t){
   adjType=t;
   document.getElementById('btn-add').className='type-btn add'+(t==='add'?' active':'');
   document.getElementById('btn-cut').className='type-btn cut'+(t==='cut'?' active':'');
@@ -421,107 +417,120 @@ function setAdjType(t) {
   b.innerHTML=t==='add'?'<i class="ti ti-check"></i> ยืนยันรับสินค้า':'<i class="ti ti-check"></i> ยืนยันตัดสต็อก';
 }
 function changeQty(d){adjQty=Math.max(1,adjQty+d);document.getElementById('adj-qty').textContent=adjQty;}
-function submitAdjust() {
+function submitAdjust(){
   const sel=document.getElementById('adj-product');
   if(!sel.value){showToast('กรุณาเลือกสินค้า');return;}
   const p=products.find(x=>x.id==sel.value);
   if(adjType==='cut'&&adjQty>p.qty){showToast('⚠ สต็อกไม่เพียงพอ');return;}
   p.qty+=adjType==='add'?adjQty:-adjQty;
-  addHistory(adjType,p.name,adjQty,document.getElementById('adj-note').value);
+  addHist(adjType,p.name,adjQty,document.getElementById('adj-note').value);
   showToast(adjType==='add'?`รับเข้า ${adjQty} ${p.unit} ✓`:`ตัดออก ${adjQty} ${p.unit} ✓`);
-  refresh(); adjQty=1; document.getElementById('adj-qty').textContent=1;
-  document.getElementById('adj-product').value='';
-  document.getElementById('adj-note').value='';
+  refresh();adjQty=1;document.getElementById('adj-qty').textContent=1;
+  document.getElementById('adj-product').value='';document.getElementById('adj-note').value='';
 }
-function addHistory(type,product,qty,note) {
+function addHist(type,product,qty,note){
   const time=new Date().toLocaleTimeString('th-TH',{hour:'2-digit',minute:'2-digit'});
-  history.unshift({type,product,qty,note,time}); save();
+  history.unshift({type,product,qty,note,time});save();
 }
-function filterProducts(q) {
+function filterProducts(q){
   renderProducts(products.filter(p=>p.name.includes(q)||p.sku.toLowerCase().includes(q.toLowerCase())));
 }
 
-// ===== BARCODE + QR SCANNER (ZXing) =====
-async function toggleCamera() {
-  if(camRunning){stopCamera();return;}
-  try {
-    setStatus('กำลังเปิดกล้อง...');
-    const video = document.getElementById('qr-video');
-
-    // ใช้ ZXing สำหรับ barcode
-    if(window.ZXing) {
-      const hints = new Map();
-      const formats = [
-        ZXing.BarcodeFormat.EAN_13,
-        ZXing.BarcodeFormat.EAN_8,
-        ZXing.BarcodeFormat.CODE_128,
-        ZXing.BarcodeFormat.CODE_39,
-        ZXing.BarcodeFormat.UPC_A,
-        ZXing.BarcodeFormat.UPC_E,
-        ZXing.BarcodeFormat.QR_CODE,
-        ZXing.BarcodeFormat.DATA_MATRIX,
-      ];
-      hints.set(ZXing.DecodeHintType.POSSIBLE_FORMATS, formats);
-      zxingReader = new ZXing.BrowserMultiFormatReader(hints);
-      
-      document.getElementById('qr-placeholder').style.display='none';
-      document.getElementById('cam-box').style.display='block';
-      document.getElementById('cam-btn').innerHTML='<i class="ti ti-player-stop"></i> หยุดกล้อง';
-      camRunning=true;
-      setStatus('📷 จ่อบาร์โค้ดเข้าหากล้อง...');
-
-      await zxingReader.decodeFromConstraints(
-        {video:{facingMode:{ideal:'environment'}}},
-        video,
-        (result, err) => {
-          if(result) {
-            const code = result.getText();
-            if(code !== lastScannedCode) {
-              lastScannedCode = code;
-              onBarcodeFound(code);
-            }
-          }
-        }
-      );
-    } else {
-      showToast('ไลบรารีสแกนยังโหลดไม่เสร็จ กรุณารอสักครู่');
-    }
-  } catch(e) {
-    let msg = 'ไม่สามารถเข้าถึงกล้องได้';
-    if(e.name==='NotAllowedError') msg='กรุณาอนุญาตการเข้าถึงกล้อง';
-    else if(e.name==='NotFoundError') msg='ไม่พบกล้องในอุปกรณ์';
-    showToast(msg); setStatus(msg);
-    stopCamera();
-  }
+// ===== QUAGGA BARCODE SCANNER =====
+function toggleScanner(){
+  if(scannerRunning){stopScanner();return;}
+  startScanner();
 }
 
-function onBarcodeFound(code) {
-  const p = products.find(x=>x.sku===code);
-  if(p) {
+function startScanner(){
+  setStatus('กำลังเปิดกล้อง...');
+  document.getElementById('qr-placeholder').style.display='none';
+  document.getElementById('scanner-container').style.display='block';
+  document.getElementById('cam-btn').innerHTML='<i class="ti ti-player-stop"></i> หยุดกล้อง';
+  lastCode='';
+
+  Quagga.init({
+    inputStream:{
+      name:'Live',
+      type:'LiveStream',
+      target:document.getElementById('scanner-video'),
+      constraints:{
+        width:{min:640},
+        height:{min:480},
+        facingMode:'environment',
+        aspectRatio:{min:1,max:2}
+      },
+    },
+    locator:{patchSize:'medium',halfSample:true},
+    numOfWorkers:2,
+    frequency:10,
+    decoder:{
+      readers:[
+        'ean_reader',
+        'ean_8_reader',
+        'code_128_reader',
+        'code_39_reader',
+        'upc_reader',
+        'upc_e_reader',
+        'codabar_reader',
+      ]
+    },
+    locate:true
+  }, function(err){
+    if(err){
+      let msg='ไม่สามารถเปิดกล้องได้';
+      if(err.name==='NotAllowedError') msg='กรุณาอนุญาตการเข้าถึงกล้อง';
+      showToast(msg);setStatus(msg);
+      stopScanner();return;
+    }
+    Quagga.start();
+    scannerRunning=true;
+    setStatus('📷 จ่อบาร์โค้ดเข้ากรอบสีเขียว...');
+  });
+
+  Quagga.onDetected(function(result){
+    const code=result.codeResult.code;
+    if(!code || code===lastCode) return;
+    // ตรวจสอบว่า confidence สูงพอ
+    const err = result.codeResult.decodedCodes
+      .filter(x=>x.error!==undefined)
+      .map(x=>x.error);
+    const avgErr = err.reduce((s,e)=>s+e,0)/err.length;
+    if(avgErr > 0.25) return; // ถ้า error สูงเกินไปให้ข้าม
+
+    clearTimeout(debounce);
+    debounce=setTimeout(()=>{
+      lastCode=code;
+      onCodeFound(code);
+    },300);
+  });
+}
+
+function stopScanner(){
+  scannerRunning=false;
+  try{Quagga.stop();}catch(e){}
+  document.getElementById('qr-placeholder').style.display='flex';
+  document.getElementById('scanner-container').style.display='none';
+  document.getElementById('cam-btn').innerHTML='<i class="ti ti-barcode"></i> เปิดกล้องสแกน Barcode';
+  setStatus('');lastCode='';
+}
+
+function onCodeFound(code){
+  const p=products.find(x=>x.sku===code);
+  stopScanner();
+  if(p){
     showScanResult(p);
     setStatus('✅ พบ: '+p.name);
-    stopCamera();
   } else {
-    lastScannedCode = code;
+    lastCode=code;
+    document.getElementById('notfound-code').textContent=code;
     setStatus('พบรหัส: '+code+' (ไม่พบในระบบ)');
-    document.getElementById('notfound-code').textContent = 'รหัส: '+code;
-    stopCamera();
-    setTimeout(()=>openModal('modal-notfound'), 300);
+    setTimeout(()=>openModal('modal-notfound'),300);
   }
 }
 
-function stopCamera() {
-  camRunning=false; lastScannedCode='';
-  if(zxingReader){try{zxingReader.reset();}catch(e){} zxingReader=null;}
-  if(cameraStream){cameraStream.getTracks().forEach(t=>t.stop());cameraStream=null;}
-  document.getElementById('qr-placeholder').style.display='flex';
-  document.getElementById('cam-box').style.display='none';
-  document.getElementById('cam-btn').innerHTML='<i class="ti ti-barcode"></i> เปิดกล้องสแกน Barcode / QR';
-  setStatus('');
-}
 function setStatus(msg){document.getElementById('scan-status').textContent=msg;}
-
-function setScanType(t) {
+function setScanType(t){
   scanType=t;
   document.getElementById('scan-btn-add').className='type-btn add'+(t==='add'?' active':'');
   document.getElementById('scan-btn-cut').className='type-btn cut'+(t==='cut'?' active':'');
@@ -530,44 +539,42 @@ function setScanType(t) {
   b.innerHTML=t==='add'?'<i class="ti ti-check"></i> บันทึกรับเข้า':'<i class="ti ti-check"></i> บันทึกตัดออก';
 }
 function changeScanQty(d){scanQty=Math.max(1,scanQty+d);document.getElementById('scan-qty').textContent=scanQty;}
-
-function showScanResult(p) {
-  scannedProduct=p; scanQty=1;
+function showScanResult(p){
+  scannedProduct=p;scanQty=1;
   document.getElementById('scan-qty').textContent=1;
   document.getElementById('scan-product-card').innerHTML=`
     <div class="info"><div class="name">${p.name}</div><div class="meta"><span class="sku-badge">${p.sku}</span></div></div>
-    <span class="stock-pill ${stockClass(p)}">${stockLabel(p)}</span>`;
+    <span class="stock-pill ${sClass(p)}">${sLabel(p)}</span>`;
   document.getElementById('scan-result').style.display='block';
 }
-function searchByCode() {
+function searchByCode(){
   const code=document.getElementById('manual-code').value.trim();
   if(!code){showToast('กรุณาพิมพ์รหัสสินค้า');return;}
-  const p=products.find(x=>x.sku===code||x.sku.toLowerCase()===code.toLowerCase()||x.name.includes(code));
+  const p=products.find(x=>x.sku===code||x.name.includes(code));
   if(p) showScanResult(p);
-  else {
-    document.getElementById('notfound-code').textContent='รหัส: '+code;
-    lastScannedCode=code;
+  else{
+    lastCode=code;
+    document.getElementById('notfound-code').textContent=code;
     openModal('modal-notfound');
   }
 }
-function submitScanAdjust() {
-  if(!scannedProduct) return;
+function submitScanAdjust(){
+  if(!scannedProduct)return;
   const p=scannedProduct;
   if(scanType==='cut'&&scanQty>p.qty){showToast('⚠ สต็อกไม่เพียงพอ');return;}
   p.qty+=scanType==='add'?scanQty:-scanQty;
-  addHistory(scanType,p.name,scanQty,'สแกน Barcode');
+  addHist(scanType,p.name,scanQty,'สแกน Barcode');
   showToast('บันทึกเรียบร้อย ✓');
-  refresh(); document.getElementById('scan-result').style.display='none';
+  refresh();document.getElementById('scan-result').style.display='none';
   scannedProduct=null;
 }
-function addFromBarcode() {
+function addFromBarcode(){
   closeModal('modal-notfound');
-  document.getElementById('new-sku').value=lastScannedCode;
+  document.getElementById('new-sku').value=lastCode;
   openModal('modal-add');
 }
-
-function showDetail(id) {
-  selectedProduct=products.find(p=>p.id===id); if(!selectedProduct) return;
+function showDetail(id){
+  selectedProduct=products.find(p=>p.id===id);if(!selectedProduct)return;
   document.getElementById('detail-name').textContent=selectedProduct.name;
   document.getElementById('detail-sku').textContent=selectedProduct.sku;
   document.getElementById('detail-qty').textContent=selectedProduct.qty;
@@ -576,12 +583,12 @@ function showDetail(id) {
   document.getElementById('detail-min').textContent=selectedProduct.min+' '+selectedProduct.unit;
   openModal('modal-detail');
 }
-function quickAdjust(type) {
+function quickAdjust(type){
   closeModal('modal-detail');
   showPage('adjust',document.querySelectorAll('.tab')[1]);
   setTimeout(()=>{setAdjType(type);document.getElementById('adj-product').value=selectedProduct.id;},50);
 }
-function addProduct() {
+function addProduct(){
   const name=document.getElementById('new-name').value.trim();
   const sku=document.getElementById('new-sku').value.trim();
   const unit=document.getElementById('new-unit').value.trim()||'ชิ้น';
@@ -591,19 +598,19 @@ function addProduct() {
   if(!name||!sku){showToast('กรุณากรอกชื่อและรหัสสินค้า');return;}
   if(products.find(p=>p.sku===sku)){showToast('รหัสนี้มีอยู่แล้ว');return;}
   products.push({id:nextId++,sku,name,qty,unit,min,price});
-  save(); refresh(); closeModal('modal-add');
+  save();refresh();closeModal('modal-add');
   ['new-name','new-sku','new-unit','new-qty','new-min','new-price'].forEach(id=>document.getElementById(id).value='');
   showToast('เพิ่มสินค้าเรียบร้อย ✓');
 }
 function sendToPOS(m){showToast(m==='realtime'?'ซิงก์สต็อกสำเร็จ ✓':'ส่งข้อมูลผ่าน API สำเร็จ ✓');}
-function exportCSV() {
+function exportCSV(){
   const rows=[['Barcode/SKU','ชื่อสินค้า','จำนวน','หน่วย','ราคา','สต็อกขั้นต่ำ']];
   products.forEach(p=>rows.push([p.sku,p.name,p.qty,p.unit,p.price,p.min]));
   const csv=rows.map(r=>r.map(c=>`"${c}"`).join(',')).join('\n');
   const a=document.createElement('a');
   a.href=URL.createObjectURL(new Blob(['\uFEFF'+csv],{type:'text/csv;charset=utf-8'}));
   a.download='stock_'+new Date().toISOString().slice(0,10)+'.csv';
-  a.click(); showToast('ดาวน์โหลด CSV เรียบร้อย ✓');
+  a.click();showToast('ดาวน์โหลด CSV เรียบร้อย ✓');
 }
 function openModal(id){document.getElementById(id).classList.add('open');}
 function closeModal(id){document.getElementById(id).classList.remove('open');}
